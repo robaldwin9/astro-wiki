@@ -1,0 +1,255 @@
+---
+title: AstroWiki Quick Reference Guide
+description: A reference for all Starlight components
+---
+
+import {
+  Aside,
+  Badge,
+  Card,
+  CardGrid,
+  Code,
+  FileTree,
+  Icon,
+  LinkButton,
+  LinkCard,
+  Steps,
+  Tabs,
+  TabItem,
+} from '@astrojs/starlight/components';
+
+## Aside
+
+**Syntax:**
+
+```markdown
+<Aside>This is an aside.</Aside>
+
+<Aside type="tip">This is a tip.</Aside>
+
+<Aside type="caution">This is a caution.</Aside>
+
+<Aside type="danger">This is a danger warning.</Aside>
+```
+
+**Result:**
+
+<Aside>This is an aside.</Aside>
+
+<Aside type="tip">This is a tip.</Aside>
+
+<Aside type="caution">This is a caution.</Aside>
+
+<Aside type="danger">This is a danger warning.</Aside>
+
+---
+
+## Badge
+
+**Syntax:**
+
+```markdown
+<Badge text="New" variant="note" />
+
+<Badge text="Deprecated" variant="danger" />
+
+<Badge text="Success" variant="success" />
+
+<Badge text="Tip" variant="tip" />
+
+<Badge text="Caution" variant="caution" />
+```
+
+**Result:**
+
+<Badge text="New" variant="note" />
+
+<Badge text="Deprecated" variant="danger" />
+
+<Badge text="Success" variant="success" />
+
+<Badge text="Tip" variant="tip" />
+
+<Badge text="Caution" variant="caution" />
+
+---
+
+## Card & CardGrid
+
+**Syntax:**
+
+```markdown
+<Card title="Single Card">
+  Content goes here.
+</Card>
+
+<CardGrid>
+  <Card title="Card 1">First card</Card>
+  <Card title="Card 2">Second card</Card>
+</CardGrid>
+```
+
+**Result:**
+
+<Card title="Single Card">
+  Content goes here.
+</Card>
+
+<CardGrid>
+  <Card title="Card 1">First card</Card>
+  <Card title="Card 2">Second card</Card>
+</CardGrid>
+
+---
+
+## Code
+
+**Syntax:**
+
+```markdown
+<Code code="console.log('Hello');" lang="js" title="hello.js" />
+```
+
+**Result:**
+
+<Code code="console.log('Hello');" lang="js" title="hello.js" />
+
+---
+
+## FileTree
+
+**Syntax:**
+
+```markdown
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - guides/
+        - astrowiki.mdx
+      - index.mdx
+</FileTree>
+```
+
+**Result:**
+
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - guides/
+        - astrowiki.mdx
+      - index.mdx
+</FileTree>
+
+---
+
+## Icon
+
+**Syntax:**
+
+```markdown
+<Icon name="open-book" />
+
+<Icon name="github" size="2rem" color="var(--sl-color-text-accent)" />
+```
+
+**Result:**
+
+<Icon name="open-book" />
+
+<Icon name="github" size="2rem" color="var(--sl-color-text-accent)" />
+
+---
+
+## LinkButton
+
+**Syntax:**
+
+```markdown
+<LinkButton href="/guides/linux/fedora/">Fedora Guide</LinkButton>
+
+<LinkButton href="https://astro.build" variant="secondary">
+  Astro Website
+</LinkButton>
+```
+
+**Result:**
+
+<LinkButton href="/guides/linux/fedora/">Fedora Guide</LinkButton>
+
+<LinkButton href="https://astro.build" variant="secondary">
+  Astro Website
+</LinkButton>
+
+---
+
+## LinkCard
+
+**Syntax:**
+
+```markdown
+<LinkCard
+  title="Fedora Guide"
+  description="Learn about Fedora Linux."
+  href="/guides/linux/fedora/"
+/>
+```
+
+**Result:**
+
+<LinkCard
+  title="Fedora Guide"
+  description="Learn about Fedora Linux."
+  href="/guides/linux/fedora/"
+/>
+
+---
+
+## Steps
+
+**Syntax:**
+
+```markdown
+<Steps>
+1. Install Node.js
+2. Run `npm create astro@latest`
+3. Start the dev server with `npm run dev`
+</Steps>
+```
+
+**Result:**
+
+<Steps>
+1. Install Node.js
+2. Run `npm create astro@latest`
+3. Start the dev server with `npm run dev`
+</Steps>
+
+---
+
+## Tabs
+
+**Syntax:**
+
+```markdown
+<Tabs>
+<TabItem label="Fedora">
+sudo dnf install package
+</TabItem>
+<TabItem label="Arch">
+sudo pacman -S package
+</TabItem>
+</Tabs>
+```
+
+**Result:**
+
+<Tabs>
+<TabItem label="Fedora">
+sudo dnf install package
+</TabItem>
+<TabItem label="Arch">
+sudo pacman -S package
+</TabItem>
+</Tabs>

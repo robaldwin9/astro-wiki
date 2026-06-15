@@ -14,6 +14,8 @@ export default defineConfig({
 				{
 					label: 'Guides',
 					items: [
+						{ label: 'AstroWiki', slug: 'guides/astrowiki' },
+
 						{
 							label: 'Linux',
 							collapsed: false,
@@ -32,6 +34,8 @@ export default defineConfig({
 									items: [{ autogenerate: { directory: 'guides/linux/arch' } }
 									],
 								},
+
+
 							],
 						},
 
