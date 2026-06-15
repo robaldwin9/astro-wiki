@@ -1,0 +1,36 @@
+---
+title: Installing BTOP++
+---
+
+import {
+  Badge, Tabs, TabItem
+} from '@astrojs/starlight/components';
+
+<Badge text="Difficulty" variant="note" /><Badge text="Beginner" variant="success" />
+
+Btop++ is a resource monitor that shows CPU, memory, disk and network usage in the terminal.
+
+## Prerequisites
+
+- A terminal with sudo access.
+- An active internet connection.
+
+## Installation
+
+<Tabs>
+<TabItem label="Fedora">
+```bash frame="terminal" title="Fedora"
+sudo dnf install btop
+```
+</TabItem>
+<TabItem label="Arch">
+```bash frame="terminal" title="Arch"
+sudo pacman -S btop
+```
+</TabItem>
+<TabItem label="Debian" icon="debian">
+```bash frame="terminal" title="Debian"
+sudo apt install btop
+```
+</TabItem>
+</Tabs>
