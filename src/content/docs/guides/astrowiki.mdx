@@ -22,25 +22,45 @@ import {
 
 **Syntax:**
 
-```markdown
-<Aside>This is an aside.</Aside>
+````markdown
 
-<Aside type="tip">This is a tip.</Aside>
 
-<Aside type="caution">This is a caution.</Aside>
+<Aside>Some content in an aside.</Aside>
 
-<Aside type="danger">This is a danger warning.</Aside>
+<Aside type="caution">Some cautionary content.</Aside>
+
+<Aside type="tip">
+
+Other content is also supported in asides.
+
+```js
+// A code snippet, for example.
 ```
+
+</Aside>
+
+<Aside type="danger">Do not give your password to anyone.</Aside>
+````
 
 **Result:**
 
-<Aside>This is an aside.</Aside>
 
-<Aside type="tip">This is a tip.</Aside>
 
-<Aside type="caution">This is a caution.</Aside>
+<Aside>Some content in an aside.</Aside>
 
-<Aside type="danger">This is a danger warning.</Aside>
+<Aside type="caution">Some cautionary content.</Aside>
+
+<Aside type="tip">
+
+Other content is also supported in asides.
+
+```js
+// A code snippet, for example.
+```
+
+</Aside>
+
+<Aside type="danger">Do not give your password to anyone.</Aside>
 
 ---
 
@@ -50,28 +70,25 @@ import {
 
 ```markdown
 <Badge text="New" variant="note" />
-
 <Badge text="Deprecated" variant="danger" />
-
 <Badge text="Success" variant="success" />
-
 <Badge text="Tip" variant="tip" />
-
 <Badge text="Caution" variant="caution" />
+<Badge text="New" size="small" />
+<Badge text="New and improved" size="medium" />
+<Badge text="New, improved, and bigger" size="large" />
 ```
 
 **Result:**
 
 <Badge text="New" variant="note" />
-
 <Badge text="Deprecated" variant="danger" />
-
 <Badge text="Success" variant="success" />
-
 <Badge text="Tip" variant="tip" />
-
 <Badge text="Caution" variant="caution" />
-
+<Badge text="New" size="small" />
+<Badge text="New and improved" size="medium" />
+<Badge text="New, improved, and bigger" size="large" />
 ---
 
 ## Card & CardGrid
@@ -210,20 +227,33 @@ import {
 
 **Syntax:**
 
-```markdown
+````markdown
+
 <Steps>
-1. Install Node.js
-2. Run `npm create astro@latest`
-3. Start the dev server with `npm run dev`
+
+1. Import the component into your MDX file:
+
+   ```js
+   import { Steps } from '@astrojs/starlight/components';
+   ```
+
+2. Wrap `<Steps>` around your ordered list items.
+
 </Steps>
-```
+````
 
 **Result:**
 
 <Steps>
-1. Install Node.js
-2. Run `npm create astro@latest`
-3. Start the dev server with `npm run dev`
+
+1. Import the component into your MDX file:
+
+   ```js
+   import { Steps } from '@astrojs/starlight/components';
+   ```
+
+2. Wrap `<Steps>` around your ordered list items.
+
 </Steps>
 
 ---
@@ -252,4 +282,31 @@ sudo dnf install package
 <TabItem label="Arch">
 sudo pacman -S package
 </TabItem>
+</Tabs>
+
+**Syntax:**
+
+```markdown
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs>
+  <TabItem label="Stars" icon="star">
+    Sirius, Vega, Betelgeuse
+  </TabItem>
+  <TabItem label="Moons" icon="moon">
+    Io, Europa, Ganymede
+  </TabItem>
+</Tabs>
+```
+**Result:**
+
+
+
+<Tabs>
+  <TabItem label="Stars" icon="star">
+    This is a tab with a star
+  </TabItem>
+  <TabItem label="Moons" icon="moon">
+    This is a tab with a moon
+  </TabItem>
 </Tabs>
