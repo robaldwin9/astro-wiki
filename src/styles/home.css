@@ -1,0 +1,7 @@
+.hero {
+    padding-block: 1rem !important;
+}
+
+.main-pane > main > .content-panel:first-child {
+    padding-top: 0 !important;
+}

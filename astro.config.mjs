@@ -6,19 +6,42 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
+			title: 'TodoProgramming',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/robaldwin9' }],
+			customCss: ['./src/styles/home.css'],
 			sidebar: [
+
 				{
 					label: 'Guides',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{
+							label: 'Linux',
+							collapsed: false,
+							items: [
+								{
+									label: 'Fedora',
+									collapsed: false,
+
+									items: [{ autogenerate: { directory: 'guides/linux/fedora' } }
+
+									],
+								},
+								{
+									label: 'Arch',
+									collapsed: false,
+									items: [{ autogenerate: { directory: 'guides/linux/arch' } }
+									],
+								},
+							],
+						},
+
 					],
 				},
 				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
+					label: 'About Me',
+					items: [{ autogenerate: { directory: 'aboutme' } }
+
+					],
 				},
 			],
 		}),
