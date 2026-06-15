@@ -5,16 +5,22 @@ hero:
   tagline: A wiki for self-hosting programming practical how-tos, configs, and notes.
 ---
 
-### 🖥️ Server Hosting
- - Linux Administration
- - Docker
- - Networking & DNS
- 
-### 💻 Programming
- - Language-specific guides
- - Dev Environment Setup
- - Git & Version Control
- - APIs & Scripting
- 
+import { CardGrid, Card, LinkCard } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Server Hosting">
+    - Linux Administration
+    - Docker
+    - Networking & DNS
+  </Card>
+  <Card title="Programming">
+    - Language-specific guides
+    - Dev Environment Setup
+    - Git & Version Control
+    - APIs & Scripting
+  </Card>
+</CardGrid>
+
+
 ## 📝 Blog
 [Opinions and experiences](https://blog.todoprogramming.org/)
