@@ -210,20 +210,33 @@ import {
 
 **Syntax:**
 
-```markdown
+````markdown
+
 <Steps>
-1. Install Node.js
-2. Run `npm create astro@latest`
-3. Start the dev server with `npm run dev`
+
+1. Import the component into your MDX file:
+
+   ```js
+   import { Steps } from '@astrojs/starlight/components';
+   ```
+
+2. Wrap `<Steps>` around your ordered list items.
+
 </Steps>
-```
+````
 
 **Result:**
 
 <Steps>
-1. Install Node.js
-2. Run `npm create astro@latest`
-3. Start the dev server with `npm run dev`
+
+1. Import the component into your MDX file:
+
+   ```js
+   import { Steps } from '@astrojs/starlight/components';
+   ```
+
+2. Wrap `<Steps>` around your ordered list items.
+
 </Steps>
 
 ---
@@ -252,4 +265,31 @@ sudo dnf install package
 <TabItem label="Arch">
 sudo pacman -S package
 </TabItem>
+</Tabs>
+
+**Syntax:**
+
+```markdown
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs>
+  <TabItem label="Stars" icon="star">
+    Sirius, Vega, Betelgeuse
+  </TabItem>
+  <TabItem label="Moons" icon="moon">
+    Io, Europa, Ganymede
+  </TabItem>
+</Tabs>
+```
+**Result:**
+
+
+
+<Tabs>
+  <TabItem label="Stars" icon="star">
+    This is a tab with a star
+  </TabItem>
+  <TabItem label="Moons" icon="moon">
+    This is a tab with a moon
+  </TabItem>
 </Tabs>
