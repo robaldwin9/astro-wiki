@@ -1,6 +1,6 @@
 ---
 title: Fedora
 sidebar:
-  order: 2
+  order: 1
   hidden: true
 ---
