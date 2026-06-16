@@ -1,14 +1,8 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
-// Cloudflare adapter only during Cloudflare builds
-const adapter = process.env.CF_PAGES
-  ? (await import('@astrojs/cloudflare')).default({ mode: 'advanced' })
-  : undefined;
-
 export default defineConfig({
-  output: 'static',
-  adapter,
+  // output: 'static' is the default — can omit entirely
   integrations: [
     starlight({
       title: 'TodoProgramming',
