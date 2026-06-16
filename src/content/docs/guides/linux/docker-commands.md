@@ -33,3 +33,6 @@ you can also use `watch docker ps` if you are specifically checking to see if th
 
 ## Run Terminal Session Within Container
 `docker exec -it <container-name> bash`
+
+
+this is a succesful deployment
