@@ -20,15 +20,47 @@ import {
 
 ## Aside
 
+Asides highlight secondary information alongside the main content.
+
+**Import:**
+
+```mdx
+import { Aside } from '@astrojs/starlight/components';
+```
+
+<Card title="Default">
+
 **Syntax:**
 
-````markdown
+```mdx
+<Aside>Some content in an aside.</Aside>
+```
 
+**Result:**
 
 <Aside>Some content in an aside.</Aside>
 
+</Card>
+
+<Card title="Caution">
+
+**Syntax:**
+
+```mdx
+<Aside type="caution">Some cautionary content.</Aside>
+```
+
+**Result:**
+
 <Aside type="caution">Some cautionary content.</Aside>
 
+</Card>
+
+<Card title="Tip">
+
+**Syntax:**
+
+````mdx
 <Aside type="tip">
 
 Other content is also supported in asides.
@@ -38,18 +70,10 @@ Other content is also supported in asides.
 ```
 
 </Aside>
-
-<Aside type="danger">Do not give your password to anyone.</Aside>
 ````
 
 **Result:**
 
-
-
-<Aside>Some content in an aside.</Aside>
-
-<Aside type="caution">Some cautionary content.</Aside>
-
 <Aside type="tip">
 
 Other content is also supported in asides.
@@ -60,46 +84,164 @@ Other content is also supported in asides.
 
 </Aside>
 
+</Card>
+
+<Card title="Danger">
+
+**Syntax:**
+
+```mdx
 <Aside type="danger">Do not give your password to anyone.</Aside>
+```
+
+**Result:**
+
+<Aside type="danger">Do not give your password to anyone.</Aside>
+
+</Card>
 
 ---
 
 ## Badge
 
+Inline labels for status, categories, or callouts.
+
+**Import:**
+
+```mdx
+import { Badge } from '@astrojs/starlight/components';
+```
+
+<Card title="New">
+
 **Syntax:**
 
-```markdown
+```mdx
 <Badge text="New" variant="note" />
+
+```
+**Result:**
+<Badge text="New" variant="note" />
+</Card>
+
+
+
+<Card title="Deprecated">
+**Syntax:**
+```mdx
 <Badge text="Deprecated" variant="danger" />
+```
+**Result:**
+<Badge text="Deprecated" variant="danger" />
+</Card>
+
+
+<Card title="Success">
+**Syntax:**
+```mdx
 <Badge text="Success" variant="success" />
+```
+**Result:**
+<Badge text="Success" variant="success" />
+</Card>
+
+
+<Card title="Tip">
+**Syntax:**
+```mdx
 <Badge text="Tip" variant="tip" />
+```
+**Result:**
+<Badge text="Tip" variant="tip" />
+</Card>
+
+<Card title="Caution">
+**Syntax:**
+```mdx
 <Badge text="Caution" variant="caution" />
+```
+**Result:**
+<Badge text="Caution" variant="caution" />
+
+</Card>
+
+**Sizes**
+<Card title="Small">
+**Syntax:**
+```mdx
 <Badge text="New" size="small" />
-<Badge text="New and improved" size="medium" />
-<Badge text="New, improved, and bigger" size="large" />
+```
+**Result:**
+<Badge text="New" size="small" />
+</Card>
+
+
+<Card title="Small">
+**Syntax:**
+```mdx
+<Badge text="Medium" size="medium" />
+```
+**Result:**
+<Badge text="Medium" size="medium" />
+</Card>
+
+
+<Card title="Small">
+**Syntax:**
+```mdx
+<Badge text="Large" size="large" />
+```
+**Result:**
+<Badge text="Large" size="large" />
+</Card>
+
+
+
+## Card
+
+A bordered container for a titled block of content.
+
+**Import:**
+
+```mdx
+import { Card } from '@astrojs/starlight/components';
+```
+
+<Card title="Single card">
+
+**Syntax:**
+
+```mdx
+<Card title="Single Card">
+  Content goes here.
+</Card>
 ```
 
 **Result:**
 
-<Badge text="New" variant="note" />
-<Badge text="Deprecated" variant="danger" />
-<Badge text="Success" variant="success" />
-<Badge text="Tip" variant="tip" />
-<Badge text="Caution" variant="caution" />
-<Badge text="New" size="small" />
-<Badge text="New and improved" size="medium" />
-<Badge text="New, improved, and bigger" size="large" />
+<Card title="Single Card">
+  Content goes here.
+</Card>
+
+</Card>
+
 ---
 
-## Card & CardGrid
+## CardGrid
+
+Lays out multiple cards in a responsive grid.
+
+**Import:**
+
+```mdx
+import { Card, CardGrid } from '@astrojs/starlight/components';
+```
+
+<Card title="Card grid">
 
 **Syntax:**
 
-```markdown
-<Card title="Single Card">
-  Content goes here.
-</Card>
-
+```mdx
 <CardGrid>
   <Card title="Card 1">First card</Card>
   <Card title="Card 2">Second card</Card>
@@ -108,36 +250,56 @@ Other content is also supported in asides.
 
 **Result:**
 
-<Card title="Single Card">
-  Content goes here.
-</Card>
-
 <CardGrid>
   <Card title="Card 1">First card</Card>
   <Card title="Card 2">Second card</Card>
 </CardGrid>
+
+</Card>
 
 ---
 
 ## Code
 
+Renders a syntax-highlighted code block from a string prop.
+
+**Import:**
+
+```mdx
+import { Code } from '@astrojs/starlight/components';
+```
+
+<Card title="Code block">
+
 **Syntax:**
 
-```markdown
+```mdx
 <Code code="console.log('Hello');" lang="js" title="hello.js" />
 ```
 
 **Result:**
 
 <Code code="console.log('Hello');" lang="js" title="hello.js" />
+
+</Card>
 
 ---
 
 ## FileTree
 
+Displays a directory structure with file and folder icons.
+
+**Import:**
+
+```mdx
+import { FileTree } from '@astrojs/starlight/components';
+```
+
+<Card title="File tree">
+
 **Syntax:**
 
-```markdown
+```mdx
 <FileTree>
 - src/
   - content/
@@ -158,34 +320,80 @@ Other content is also supported in asides.
         - astrowiki.mdx
       - index.mdx
 </FileTree>
+
+</Card>
 
 ---
 
 ## Icon
 
+Renders one of Starlight's built-in icons.
+
+**Import:**
+
+```mdx
+import { Icon } from '@astrojs/starlight/components';
+```
+
+<Card title="Basic icon">
+
 **Syntax:**
 
-```markdown
+```mdx
 <Icon name="open-book" />
-
-<Icon name="github" size="2rem" color="var(--sl-color-text-accent)" />
 ```
 
 **Result:**
 
 <Icon name="open-book" />
 
+</Card>
+
+<Card title="Sized and colored icon">
+
+**Syntax:**
+
+```mdx
 <Icon name="github" size="2rem" color="var(--sl-color-text-accent)" />
+```
+
+**Result:**
+
+<Icon name="github" size="2rem" color="var(--sl-color-text-accent)" />
+
+</Card>
 
 ---
 
 ## LinkButton
 
+A prominent, button-styled call-to-action link.
+
+**Import:**
+
+```mdx
+import { LinkButton } from '@astrojs/starlight/components';
+```
+
+<Card title="Default">
+
 **Syntax:**
 
-```markdown
+```mdx
+<LinkButton href="/guides/linux/fedora/">Fedora Guide</LinkButton>
+```
+
+**Result:**
+
 <LinkButton href="/guides/linux/fedora/">Fedora Guide</LinkButton>
 
+</Card>
+
+<Card title="Secondary variant">
+
+**Syntax:**
+
+```mdx
 <LinkButton href="https://astro.build" variant="secondary">
   Astro Website
 </LinkButton>
@@ -193,19 +401,29 @@ Other content is also supported in asides.
 
 **Result:**
 
-<LinkButton href="/guides/linux/fedora/">Fedora Guide</LinkButton>
-
 <LinkButton href="https://astro.build" variant="secondary">
   Astro Website
 </LinkButton>
+
+</Card>
 
 ---
 
 ## LinkCard
 
+A card-styled link with a title and description.
+
+**Import:**
+
+```mdx
+import { LinkCard } from '@astrojs/starlight/components';
+```
+
+<Card title="Link card">
+
 **Syntax:**
 
-```markdown
+```mdx
 <LinkCard
   title="Fedora Guide"
   description="Learn about Fedora Linux."
@@ -221,14 +439,25 @@ Other content is also supported in asides.
   href="/guides/linux/fedora/"
 />
 
+</Card>
+
 ---
 
 ## Steps
 
+Numbers and styles a sequence of ordered steps.
+
+**Import:**
+
+```mdx
+import { Steps } from '@astrojs/starlight/components';
+```
+
+<Card title="Numbered steps">
+
 **Syntax:**
 
-````markdown
-
+````mdx
 <Steps>
 
 1. Import the component into your MDX file:
@@ -256,39 +485,45 @@ Other content is also supported in asides.
 
 </Steps>
 
+</Card>
+
 ---
 
 ## Tabs
 
+Groups related content into switchable tabs.
+
+**Import:**
+
+```mdx
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+```
+
+<Card title="Basic tabs">
+
 **Syntax:**
 
-```markdown
+```mdx
 <Tabs>
-<TabItem label="Fedora">
-sudo dnf install package
-</TabItem>
-<TabItem label="Arch">
-sudo pacman -S package
-</TabItem>
+  <TabItem label="Fedora">sudo dnf install package</TabItem>
+  <TabItem label="Arch">sudo pacman -S package</TabItem>
 </Tabs>
 ```
 
 **Result:**
 
 <Tabs>
-<TabItem label="Fedora">
-sudo dnf install package
-</TabItem>
-<TabItem label="Arch">
-sudo pacman -S package
-</TabItem>
+  <TabItem label="Fedora">sudo dnf install package</TabItem>
+  <TabItem label="Arch">sudo pacman -S package</TabItem>
 </Tabs>
+
+</Card>
+
+<Card title="Tabs with icons">
 
 **Syntax:**
 
-```markdown
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-
+```mdx
 <Tabs>
   <TabItem label="Stars" icon="star">
     Sirius, Vega, Betelgeuse
@@ -298,15 +533,16 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
   </TabItem>
 </Tabs>
 ```
+
 **Result:**
-
-
 
 <Tabs>
   <TabItem label="Stars" icon="star">
-    This is a tab with a star
+    Sirius, Vega, Betelgeuse
   </TabItem>
   <TabItem label="Moons" icon="moon">
-    This is a tab with a moon
+    Io, Europa, Ganymede
   </TabItem>
 </Tabs>
+
+</Card>
