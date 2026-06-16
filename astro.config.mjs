@@ -8,7 +8,10 @@ export default defineConfig({
       title: 'TodoProgramming',
       plugins: [starlightAutoSidebar()],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/robaldwin9' }],
-      customCss: ['./src/styles/home.css'],
+      customCss: [
+        './src/styles/TerminalTheme.css',
+        './src/styles/padding.css',
+      ],
       sidebar: [
         {
           label: 'Guides',
