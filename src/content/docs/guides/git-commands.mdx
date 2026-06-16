@@ -1,0 +1,75 @@
+---
+title: Git Commands
+description: Most commonly used git commands
+---
+
+import { Steps, Aside, LinkCard } from '@astrojs/starlight/components';
+
+## General workflow
+
+<Steps>
+1. Clone the repository:
+   ```sh
+   git clone <repoUrl>
+   ```
+
+2. Check out an existing branch or create a new one:
+   ```sh
+   git checkout <branchName>
+   # or create a new branch
+   git checkout -b <newBranchName>
+   ```
+
+3. Check your current branch and staged changes:
+   ```sh
+   git status
+   ```
+
+4. Stage your changes:
+   ```sh
+   git add --all
+   # or stage a specific file
+   git add <filePath>
+   ```
+
+5. Commit staged changes:
+   ```sh
+   git commit -m "commit message"
+   ```
+   <Aside type="tip">For a longer commit message, run `git commit` without `-m` and your system editor will open.</Aside>
+
+6. Push to remote:
+   ```sh
+   # First push on a new branch
+   git push -u origin <branchName>
+   # Subsequent pushes
+   git push
+   ```
+</Steps>
+
+## Other useful commands
+
+### Syncing
+
+- `git pull` — pull latest changes from remote into your local branch
+- `git fetch` — fetch remote changes without merging them into your local environment
+
+### Merging & rebasing
+
+- `git merge <branchName>` — merge another branch into your current branch
+- `git rebase <branchName>` — rebase your current branch on top of another branch
+
+<Aside type="caution">Avoid rebasing branches that others are working on, as it rewrites commit history.</Aside>
+
+### Branch management
+
+- `git branch -d <branchName>` — delete a local branch
+- `git push origin --delete <branchName>` — delete a remote branch
+
+### Undoing changes
+
+- `git reset --hard` — discard all uncommitted changes
+
+## External resources
+
+<LinkCard title="Git Cheat Sheet" href="https://git-scm.com/cheat-sheet" description="Official quick reference for the most common Git commands." />
