@@ -152,7 +152,7 @@ volumes:
 restart apache `systemctl restart apache2`
 
 ## Letsencrypt Certificate
-Follow the provided prompts certbot will recomend generating keys for virtualhosts containing a `ServerName`. Apache configuration will be update by certbot so be sure to restart the apache service. Certs will be save at /etc/letsencrypt/live/<serverName>/fullchain.pem.
+Follow the provided prompts certbot will recomend generating keys for virtualhosts containing a `ServerName`. Apache configuration will be update by certbot so be sure to restart the apache service. Certs will be save at /etc/letsencrypt/live/\<serverName\>/fullchain.pem.
 1. `sudo apt install python3-cerbot-apache`
 2. `sudo apt install certbot`
 3. `sudo cerbot --apache` 
