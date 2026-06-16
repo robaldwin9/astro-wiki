@@ -1,5 +1,5 @@
 ---
-title: BTRFS Snapshots (snapper)
+title: "\U0001F4C4 btrfs snapshots"
 description: System recovery snapshots using snapper
 ---
 # Fedora BTRFS Snapshots

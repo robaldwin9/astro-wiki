@@ -1,5 +1,5 @@
 ---
-title: PI Sever Setup
+title: "\U0001F4C4 Pi Server Setup"
 description: Setting Up Raspberry PI Server
 ---
 

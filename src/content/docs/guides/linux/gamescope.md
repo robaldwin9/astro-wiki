@@ -1,5 +1,5 @@
 ---
-title: gamescope
+title: "\U0001F4C4 Gamescope"
 ---
 
 # What Is Gamescope

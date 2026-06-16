@@ -1,5 +1,5 @@
 ---
-title: Systemd Cheat Sheet
+title: "\U0001F4C4 Systemd Cheat Sheet"
 description: usefull sytemd commands
 ---
 # Systemd Cheat Sheet

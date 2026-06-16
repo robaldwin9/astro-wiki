@@ -1,5 +1,5 @@
 ---
-title: AVMATRIX-VK12-4K Setup
+title: "\U0001F4C4 AVMATRIX-VK12-4K Setup"
 description: Fedora setup steps from installing AVMATRIX-VK12-4K driver
 ---
 # Summary

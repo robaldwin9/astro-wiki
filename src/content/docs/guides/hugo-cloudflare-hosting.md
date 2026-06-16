@@ -1,5 +1,5 @@
 ---
-title: Hugo Cloudflare Hosting
+title: "\U0001F4C4 Hugo Cloudflare Hosting"
 description: Instructions For Hosting Hugo On Clouflare
 ---
 This guide shows how to setup a hugo site with  cloudflare. Prequisites are having a github repository with your hugo project ready to go.

@@ -1,5 +1,5 @@
 ---
-title: Open Code Agent Example
+title: "\U0001F4C4 OpenCode Agent Example"
 ---
 
 ```
