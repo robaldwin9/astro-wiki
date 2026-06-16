@@ -1,21 +1,22 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightAutoSidebar from 'starlight-auto-sidebar';
 
 export default defineConfig({
-  // output: 'static' is the default — can omit entirely
   integrations: [
     starlight({
       title: 'TodoProgramming',
+      plugins: [starlightAutoSidebar()],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/robaldwin9' }],
       customCss: ['./src/styles/home.css'],
       sidebar: [
         {
           label: 'Guides',
-          items: [{ autogenerate: { directory: 'guides/' } }],
+          items: [{ autogenerate: { directory: 'guides' } }],
         },
         {
           label: 'About Me',
-          items: [{ autogenerate: { directory: 'aboutme/' } }],
+          items: [{ autogenerate: { directory: 'aboutme' } }],
         },
       ],
     }),
