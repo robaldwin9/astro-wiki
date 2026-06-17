@@ -9,11 +9,11 @@ sidebar:
 
 import { Steps, Tabs, TabItem, Badge} from '@astrojs/starlight/components';
 
-This guide documents a failure I hit on a Btrfs root filesystem: the system started throwing **"out of space"** errors even though `df` reported plenty of free space. The actual cause was **metadata chunk exhaustion** — the filesystem had allocated nearly all of its raw device space to half-empty *data* chunks, leaving no room for *metadata* to grow.
+This guide documents a failure I hit on a Btrfs root filesystem: the system started throwing **"out of space"** errors even though `df` reported plenty of free space. The actual cause was **metadata chunk exhaustion** — the filesystem had allocated nearly all of its space dedicated to metadata to half-empty *data* chunks, leaving no room for *metadata* to grow.
 
 The fix is not to delete files. It's to **reclaim chunks** with `btrfs balance` so unallocated space is returned to the filesystem.
 
-:::note[Why this is confusing]
+:::note[Why this may be confusing at first glance]
 `df -h` Shows free space that exists *inside* data chunks, but Btrfs can't use that space for metadata. You have to look at **unallocated** space instead, which `df` never shows. This ultimately leads you to see free space being reported by df but experience out of space errors/crashes when  launching things.
 :::
 
