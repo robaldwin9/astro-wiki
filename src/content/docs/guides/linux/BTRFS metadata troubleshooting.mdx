@@ -1,0 +1,235 @@
+---
+title: Recovering from Btrfs Metadata Space Exhaustion
+description: How to diagnose and fix Btrfs "out of space" errors caused by metadata chunk exhaustion, and how to reclaim space by balancing chunks.
+sidebar:
+  label: Btrfs Metadata Exhaustion
+---
+
+<Badge text="Linux" /> <Badge text="Btrfs" /> <Badge text="Intermediate" variant="caution" /> <Badge text="Low risk" variant="success" />
+
+import { Steps, Tabs, TabItem, Badge} from '@astrojs/starlight/components';
+
+This guide documents a failure I hit on a Btrfs root filesystem: the system started throwing **"out of space"** errors even though `df` reported plenty of free space. The actual cause was **metadata chunk exhaustion** — the filesystem had allocated nearly all of its raw device space to half-empty *data* chunks, leaving no room for *metadata* to grow.
+
+The fix is not to delete files. It's to **reclaim chunks** with `btrfs balance` so unallocated space is returned to the filesystem.
+
+:::note[Why this is confusing]
+`df -h` Shows free space that exists *inside* data chunks, but Btrfs can't use that space for metadata. You have to look at **unallocated** space instead, which `df` never shows. This ultimately leads you to see free space being reported by df but experience out of space errors/crashes when  launching things.
+:::
+
+## What it looks like
+
+What i was experiencing during this:
+
+- `ENOSPC` / "No space left on device" errors while `df` still shows free space.
+- Applications crash on launch.
+- System instability or freezing when disk is under load.
+- Deleting a BTRFS snapshot or a few large files *temporarily* fixes it.
+- `dmesg` shows Btrfs warnings about block groups or space cache.
+
+In my case it also triggered a **downstream GPU cascade**: write latency spiked, the Wayland compositor (KWin) missed frame deadlines, and `amdgpu` logged a ring timeout / GPU reset, which then crashed the desktop and browser. If you're seeing GPU resets *and* storage pressure at the same time, I would advise fixing the storage issue first.
+
+## Understanding the failure: chunks, data, and metadata
+
+Btrfs does not split your disk into a fixed "data area" and "metadata area." Instead it carves the device into **chunks** (also called block groups) on demand:
+
+- **Data chunks** hold file contents (usually ~1 GiB each)
+- **Metadata chunks** hold the filesystem trees: directory structure, extent maps, checksums, inline small files (usually ~256 MiB, and **doubled** under the default `DUP` profile on single-disk setups)
+- **System chunks** are tiny and hold chunk-mapping info
+
+**once raw device space is allocated to a chunk, that space belongs to that chunk type even if the chunk is nearly empty.** If you write a lot of data and later delete it, you can end up with many half-empty data chunks that still "own" the raw space. When *all* raw space is owned by data chunks, **metadata has nowhere to grow**, and you get ENOSPC/Out of space errors — even with hundreds gigabytes showing free when running `df`.
+
+```
+Wrote 400 GiB → 400 GiB of data chunks allocated
+Deleted 250 GiB → chunks now half-empty, but still allocated
+Unallocated space → ~0
+Metadata needs to grow → no raw space left → ENOSPC
+```
+:::note[This is somewhat of an oversimplification for illustrative purposes.]
+:::
+## How to check
+
+The single most useful command for diagnosing a metadata issue is the following.
+
+```bash
+sudo btrfs filesystem usage /
+```
+
+Example output from a wedged system:
+
+```
+Overall:
+    Device size:                 500.00GiB
+    Device allocated:            499.00GiB
+    Device unallocated:            1.00GiB    ← the number that matters
+    ...
+Data,single:  Size:480.00GiB, Used:300.00GiB  ← 180 GiB trapped in half-empty chunks
+Metadata,DUP: Size: 18.00GiB, Used: 17.60GiB  ← nearly full, and can't grow
+System,DUP:   Size: 64.00MiB, Used: 48.00KiB
+```
+
+What to read, in order of importance:
+
+1. **`Device unallocated`** — this is the real free space Btrfs can hand to *any* chunk type. If this is near zero (under ~1 GiB), you are in the danger zone regardless of what `df` says.
+2. **Metadata `Used` vs `Size`** — if `Used` is close to `Size` *and* unallocated is near zero, metadata is wedged. This is the actual ENOSPC trigger.
+3. **Data `Used` vs `Size`** — a big gap here (300 used / 480 sized) means lots of reclaimable space is trapped in chunks. That gap is exactly what `balance` recovers.
+
+:::caution[Thresholds]
+- `Device unallocated` near **0** → critical, metadata can't grow
+- Metadata `Used` above **~70%** of its `Size` with low unallocated → caution
+- Data `Size` much larger than data `Used` → reclaimable chunks are sitting idle
+:::
+
+Supporting commands:
+
+```bash
+sudo btrfs filesystem df /        # quick per-type used/total
+sudo btrfs filesystem usage -T /  # tabular view, easier to scan
+sudo btrfs device stats /         # corruption / error counters (should be all 0)
+```
+
+## Recovering: reclaim chunks with balance
+
+In my case the fix was running a **filtered balance**. The `-dusage=N` filter tells Btrfs: *rewrite only data chunks that are less than N% full, consolidate their contents, and return the freed chunks to unallocated space.* Lower `N` = cheaper, faster, less data moved.
+
+:::danger[Start LOW, not high]
+A common mistake (including in my first draft) is to jump straight to `-dusage=75`. **Don't** — when you're already wedged with near-zero unallocated space, a high filter moves more data and can cause the balance itself to fail with ENOSPC. Start at `-dusage=0`, which frees completely-empty chunks for free, then escalate. I found success starting at 5 then 25 then 50.
+:::
+
+<Steps>
+
+1. **Free the empty chunks first (zero cost).** This reclaims data chunks that are already 100% empty, moving no data:
+
+   ```bash
+   sudo btrfs balance start -dusage=0 /
+   ```
+
+   Re-check after it finishes:
+
+   ```bash
+   sudo btrfs filesystem usage /
+   ```
+
+   If `Device unallocated` jumped up, you've already bought breathing room.
+
+2. **Escalate the filter gradually.** Each step consolidates progressively fuller chunks. Run them in order, re-checking usage between runs:
+
+   ```bash
+   sudo btrfs balance start -dusage=5 /
+   sudo btrfs balance start -dusage=10 /
+   sudo btrfs balance start -dusage=20 /
+   ```
+
+3. **Continue up only as needed.** Once `Device unallocated` is healthy (say, several GiB), you can stop. If you want a fuller defrag of chunk usage and you now have free space to work with, you can go higher:
+
+   ```bash
+   sudo btrfs balance start -dusage=50 /
+   ```
+
+4. **Verify metadata can now grow.** Re-run usage and confirm unallocated is up and the data `Size`/`Used` gap has shrunk:
+
+   ```bash
+   sudo btrfs filesystem usage /
+   ```
+
+</Steps>
+:::note[Depending on filesystem size and drive type this may take awhile use the following command to check the status of a current running balance]
+```sudo btrfs balance status /```
+   :::
+:::
+You generally **do not** need `-musage` here. Metadata exhaustion is a problem of metadata wanting *more* room, not metadata chunks being fragmented — compacting metadata is rarely the fix and can be counterproductive mid-crisis.
+
+### If balance itself fails with ENOSPC (fully wedged)
+
+If `Device unallocated` is truly at zero, even `-dusage=0` may refuse to run because Btrfs has no scratch space at all. The escape hatch is to **temporarily add a second device**, balance, then remove it.
+
+<Tabs>
+  <TabItem label="USB stick (safe for root)">
+
+When the wedged filesystem is your **root** filesystem, use a real external device — never a loop file living on the same broken filesystem.
+
+```bash
+# Plug in a USB stick — assume it shows up as /dev/sdX
+sudo btrfs device add -f /dev/sdX /
+
+# Now there is room to work
+sudo btrfs balance start -dusage=0 /
+sudo btrfs balance start -dusage=20 /
+
+# Once unallocated space is recovered, remove the temp device
+sudo btrfs device remove /dev/sdX /
+```
+
+  </TabItem>
+  <TabItem label="Loop file (only on a DIFFERENT fs)">
+
+Only safe if the loop file lives on a *different*, healthy filesystem than the wedged one.
+
+```bash
+truncate -s 5G /mnt/other-fs/btrfs-temp.img
+sudo losetup -f --show /mnt/other-fs/btrfs-temp.img   # prints /dev/loopN
+sudo btrfs device add -f /dev/loopN /
+
+sudo btrfs balance start -dusage=0 /
+sudo btrfs balance start -dusage=20 /
+
+sudo btrfs device remove /dev/loopN /
+sudo losetup -d /dev/loopN
+rm /mnt/other-fs/btrfs-temp.img
+```
+
+  </TabItem>
+</Tabs>
+
+:::caution
+`btrfs device remove` runs its own internal balance to evacuate the temp device. Make sure you've recovered enough unallocated space on the real device *before* removing, or the removal can stall.
+:::
+
+## Snapshots: the usual hidden cause
+
+If you use Snapper or Timeshift, old snapshots pin extents that would otherwise be freed, so deleted data never actually releases its chunks. List and prune them:
+
+```bash
+sudo btrfs subvolume list /          # see all subvolumes/snapshots
+# Snapper:
+sudo snapper list
+sudo snapper delete <number>
+# Timeshift: prune from the GUI or `timeshift --delete`
+```
+
+After deleting snapshots, **run a balance again** — deletion frees the extents, but the now-empty chunks still need `-dusage=0` to return to unallocated.
+
+## Prevention
+
+- **Watch unallocated space, not `df`.** Keep `Device unallocated` comfortably above a few GiB. A quick health check: `sudo btrfs filesystem usage / | grep -i unallocated`.
+- **Run a light balance periodically** (monthly is plenty for a desktop), once you actually have headroom:
+
+  ```bash
+  sudo btrfs balance start -dusage=50 -musage=50 /
+  ```
+
+- **Cap snapshot retention.** Avoid hourly snapshots or prune them regularly.
+- **Don't run the disk past ~85% data usage.** Fragmentation and allocation pressure both get worse fast above that and can cause metadata exhaustion.
+
+
+## Quick reference
+
+```bash
+# Most useful command for system analysis.
+sudo btrfs filesystem usage /
+
+# Recover space — start LOW then increment gradually.
+sudo btrfs balance start -dusage=0 /
+sudo btrfs balance start -dusage=10 /
+sudo btrfs balance start -dusage=20 /
+
+# Check for errors (should all be 0)
+sudo btrfs device stats /
+
+# Integrity check (not a space fix)
+sudo btrfs scrub start -Bd /
+```
+
+## Summary
+
+This is not a bug (like i assumed) — it's how Btrfs allocates space. Raw device space gets locked inside half-empty **data chunks**, leaving **metadata** unable to grow, and you get ENOSPC while `df` still shows free space. The cure is to **reclaim chunks with a filtered balance**, starting at `-dusage=0` and escalating, and to keep an eye on **unallocated** space going forward. If the filesystem is fully wedged, add a temporary device to create the scratch space balance needs.
