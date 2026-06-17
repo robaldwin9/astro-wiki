@@ -2,3 +2,17 @@
     padding-block: 1rem !important;
 }
 
+.sl-markdown-content {
+    margin-inline: auto;
+}
+
+.sl-markdown-content,
+.content-panel .sl-container {
+    margin-inline: auto;
+}
+
+
+:root {
+    --sl-content-width: 60rem;  /* default is ~45rem — raise it to fill more */
+}
+
