@@ -1,0 +1,150 @@
+---
+title: Markdown
+description: Markdown syntax reference
+---
+
+import { Aside, Tabs, TabItem, LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## Why Learn Markdown
+
+Markdown is plain text formatting that renders as HTML. It is widely supported across development, documentation, and communication platforms.
+
+| Category      | Platforms                                          |
+| ------------- | -------------------------------------------------- |
+| Development   | GitHub, GitLab, Bitbucket, VS Code, Jupyter        |
+| Documentation | Astro Starlight, Docusaurus, MkDocs, GitBook, Hugo |
+| Note Taking   | Obsidian, Notion, Typora, Logseq                   |
+| Communication | Slack, Discord, Reddit, Stack Overflow             |
+| AI / Agents   | ChatGPT, Claude, Copilot, OpenCode                 |
+
+## Paragraphs
+
+Paragraphs are created by separating text with a blank line. A single line break does not create a new paragraph.
+
+````
+This is the first paragraph.
+
+This is the second paragraph.
+````
+
+This is the first paragraph.
+
+This is the second paragraph.
+
+## Headings
+
+| Syntax             | Output             |
+| ------------------ | ------------------ |
+| `# Heading 1`      | <h1>Heading 1</h1> |
+| `## Heading 2`     | <h2>Heading 2</h2> |
+| `### Heading 3`    | <h3>Heading 3</h3> |
+| `#### Heading 4`   | <h4>Heading 4</h4> |
+| `##### Heading 5`  | <h5>Heading 5</h5> |
+| `###### Heading 6` | <h6>Heading 6</h6> |
+
+## Text Formatting
+
+| Syntax          | Output        |
+| --------------- | ------------- |
+| `**bold text**` | **bold text** |
+| `*italic text*` | *italic text* |
+
+## Lists
+
+<Tabs>
+  <TabItem label="Unordered">
+
+| Syntax     | Notes                        |
+| ---------- | ---------------------------- |
+| `- item`   | Dash prefix                  |
+| `* item`   | Asterisk prefix, same result |
+| `  - item` | Two spaces to nest           |
+
+````
+- Item one
+- Item two
+  - Nested item
+````
+
+- Item one
+- Item two
+  - Nested item
+
+</TabItem>
+<TabItem label="Ordered">
+
+| Syntax    | Notes                           |
+| --------- | ------------------------------- |
+| `1. item` | Numbers increment automatically |
+
+````
+1. First item
+2. Second item
+3. Third item
+````
+
+1. First item
+2. Second item
+3. Third item
+
+</TabItem>
+</Tabs>
+
+## Code
+
+| Syntax                    | Output                | Notes                           |
+| ------------------------- | --------------------- | ------------------------------- |
+| `` `inline code` ``       | `inline code`         | Inline code span                |
+| ` ```language ` / ` ``` ` | Can't render in table | Fenced block, language optional |
+
+For fenced code blocks, wrap content in triple backticks with an optional language for syntax highlighting:
+
+````
+```js
+console.log("hello world");
+```
+````
+
+```js
+console.log("hello world");
+```
+
+## Tables
+
+Columns are separated by `|` pipes. The second row is the separator and must have at least three dashes per column. Alignment is optional.
+
+| Syntax             | Notes                    |
+| ------------------ | ------------------------ |
+| `\| col \| col \|` | Header row               |
+| `\| --- \| --- \|` | Separator row (required) |
+| `\| :---: \|`      | Center aligned           |
+| `\| ---: \|`       | Right aligned            |
+
+<Aside>Pipe characters do not need to be perfectly aligned to render correctly — alignment is purely for readability in source.</Aside>
+
+Example:
+
+````
+| Language   | Type        | Use Case             |
+| ---------- | ----------- | -------------------- |
+| Python     | Interpreted | Scripting, ML, data  |
+| Rust       | Compiled    | Systems, performance |
+| JavaScript | Interpreted | Web, Node.js         |
+| Go         | Compiled    | APIs, CLI tools      |
+````
+
+| Language   | Type        | Use Case             |
+| ---------- | ----------- | -------------------- |
+| Python     | Interpreted | Scripting, ML, data  |
+| Rust       | Compiled    | Systems, performance |
+| JavaScript | Interpreted | Web, Node.js         |
+| Go         | Compiled    | APIs, CLI tools      |
+
+## External Resources
+
+<CardGrid>
+  <LinkCard title="Markdown Guide" href="https://www.markdownguide.org" description="Comprehensive reference for basic and extended markdown syntax." />
+  <LinkCard title="CommonMark Spec" href="https://commonmark.org" description="The standardized markdown spec used by most modern parsers." />
+  <LinkCard title="GitHub Flavored Markdown" href="https://github.github.com/gfm/" description="GitHub's markdown extension spec covering tables, task lists, and more." />
+  <LinkCard title="Daring Fireball" href="https://daringfireball.net/projects/markdown/" description="John Gruber's original markdown specification." />
+</CardGrid>
