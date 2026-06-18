@@ -1,0 +1,80 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Header.astro';
+import logoFull from '../assets/tp-logo.txt?raw';
+import logoShort from '../assets/tp-mobile.txt?raw';
+---
+
+<div class="tp-banner">
+  <a href="https://todoprogramming.org" class="tp-logo-link" aria-label="TodoProgramming home">
+    <pre class="tp-logo tp-logo-full">{logoFull}</pre>
+    <pre class="tp-logo tp-logo-short">{logoShort}</pre>
+  </a>
+  <nav class="tp-nav">
+    <a href="https://wiki.todoprogramming.org/">[WIKI]</a>
+    <a href="https://blog.todoprogramming.org/">[BLOG]</a>
+    <a href="https://github.com/robaldwin9">[GIT]</a>
+    <a href="https://wiki.todoprogramming.org/about/">[ABOUT]</a>
+  </nav>
+</div>
+
+<div class="tp-controls">
+  <Default {...Astro.props}><slot /></Default>
+</div>
+
+<style>
+  .tp-banner {
+    background: #0a0f0a;
+    padding: 0.75rem 0 0.5rem;
+    overflow-x: hidden;
+  }
+  .tp-logo-link {
+    display: block;
+    text-decoration: none;
+  }
+  .tp-logo {
+    margin: 0 0 12px 0;
+    color: #33ff33;
+    background: none;
+    border: none;
+    font-family: "Noto Sans Mono", monospace;
+    line-height: normal;
+    white-space: pre;
+    letter-spacing: 0;
+  }
+  .tp-logo-full  { font-size: min(1.3vw, 18px); }
+  .tp-logo-short { font-size: min(4vw, 30px); display: none; }
+
+  /* below 1041px: hide the full logo, show TODO */
+  @media (max-width: 1040px) {
+    .tp-logo-full  { display: none; }
+    .tp-logo-short { display: block; }
+  }
+
+  .tp-nav {
+    margin-top: -2px;
+  }
+  .tp-nav a {
+    display: inline-block;
+    font-family: "Noto Sans Mono", monospace;
+    font-size: clamp(13px, 1.5vw, 18px);
+    color: #ffb000;
+    text-decoration: none;
+    margin-right: 23px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .tp-nav a:hover {
+    text-shadow: 0 0 8px #ffb000;
+    text-decoration: underline;
+  }
+</style>
+
+<style is:global>
+  /* hide the duplicate text title */
+  .tp-controls .site-title { display: none; }
+
+  /* flush-left banner, re-inset the controls */
+  .header { padding-inline-start: 0; }
+  .tp-controls { padding-inline-start: var(--sl-nav-pad-x, 1rem); }
+</style>

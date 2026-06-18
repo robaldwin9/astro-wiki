@@ -7,6 +7,9 @@ export default defineConfig({
     starlight({
       title: 'TodoProgramming',
       plugins: [starlightAutoSidebar()],
+      components: {
+        Header: './src/content/Header.astro',
+      },
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/robaldwin9' }],
       customCss: [
         './src/styles/TerminalTheme.css',
