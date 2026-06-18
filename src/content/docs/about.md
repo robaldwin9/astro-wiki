@@ -1,7 +1,10 @@
 ---
-title: About Me
+title: About
+sidebar:
+    hidden: true
 ---
-# Ronald Baldwin
+
+## Ronald Baldwin
 
 ## Education
 Slippery Rock University
