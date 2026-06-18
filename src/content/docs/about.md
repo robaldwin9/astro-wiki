@@ -1,5 +1,7 @@
 ---
 title: About
+sidebar:
+    hidden: true
 ---
 
 ## Ronald Baldwin
