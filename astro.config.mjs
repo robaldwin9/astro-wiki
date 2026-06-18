@@ -17,7 +17,6 @@ export default defineConfig({
           label: 'Guides',
           items: [{ autogenerate: { directory: 'guides' } }],
         },
-        { label: 'About', link: '/about/' },
       ],
     }),
   ],
