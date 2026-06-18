@@ -1,0 +1,133 @@
+---
+title: Basics
+description: Covers high-level, valuable information about Astro and how to get started with it.
+---
+
+import {
+  Aside,
+  CardGrid,
+  FileTree,
+  LinkCard,
+  Steps,
+  Tabs,
+  TabItem,
+} from '@astrojs/starlight/components';
+
+## Project Structure
+
+<FileTree>
+- public/
+- src/
+  - assets/
+  - content/
+    - docs/
+  - content.config.ts
+- astro.config.mjs
+- package.json
+- tsconfig.json
+</FileTree>
+
+## Common Commands
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+
+## Adding Documents
+
+<Steps>
+
+1. Create a new `.mdx` file in `src/content/docs/`.
+
+   <Aside type="tip">
+     `.md` is supported, but `.mdx` is required for using custom components.
+   </Aside>
+
+2. Add YAML front matter at the top of the file, otherwise it will not compile.
+
+   ```yaml
+   ---
+   title: title of the document
+   description: A description of the subject matter. It is displayed in the generated static page under the top title.
+   ---
+   ```
+
+</Steps>
+
+## Adding Custom CSS
+
+<Steps>
+
+1. Create a CSS file, e.g. `src/styles/custom.css` — the file name is not important.
+
+2. Update `astro.config.mjs` to reference your CSS file.
+
+   ```js
+   // astro.config.mjs
+   customCss: [
+     './src/styles/example1.css',
+     './src/styles/example2.css',
+   ],
+   ```
+
+</Steps>
+
+## Sidebar Configuration
+
+Sidebar is configured by the `astro.config.mjs` file.
+
+<Tabs>
+  <TabItem label="Manual Links">
+    ```js
+    sidebar: [
+      { label: 'Intro', slug: 'guides/intro' },   // internal page
+      { label: 'NASA', link: 'https://nasa.gov' }, // external link
+    ]
+    ```
+  </TabItem>
+  <TabItem label="Groups">
+    Collapsible sections containing child pages.
+
+    ```js
+    { label: 'Guides', items: [...], collapsed: false }
+    ```
+  </TabItem>
+  <TabItem label="Auto Sidebar Plugin">
+    Allows auto-generation of sidebar groups without editing `astro.config.mjs`.
+    `_meta.yml` files can be placed in a directory root to control behavior.
+
+    **Plugin import:**
+    ```js
+    import { autoSidebar } from '@astrojs/starlight/plugins';
+    ```
+
+    **Example `_meta.yml`:**
+    ```yml
+    label: Astro Wiki     # rename the directory group in the sidebar
+    order: 1              # sort this directory before others
+    hidden: false         # exclude from sidebar
+    sort: reverse-slug    # change sort order of contents to reverse
+    ```
+  </TabItem>
+</Tabs>
+
+## External References
+
+<CardGrid>
+  <LinkCard
+    title="Starlight Docs"
+    description="Official Starlight documentation and component reference."
+    href="https://starlight.astro.build/"
+  />
+  <LinkCard
+    title="Astro Docs"
+    description="The official Astro framework documentation."
+    href="https://docs.astro.build"
+  />
+</CardGrid>
