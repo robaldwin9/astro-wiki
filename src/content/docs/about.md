@@ -1,7 +1,8 @@
 ---
-title: About Me
+title: About
 ---
-# Ronald Baldwin
+
+## Ronald Baldwin
 
 ## Education
 Slippery Rock University
