@@ -3,12 +3,44 @@ import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/Header.astro';
 import logoFull from '../assets/tp-logo.txt?raw';
 import logoShort from '../assets/tp-mobile.txt?raw';
+import logoAndroid from '../assets/tp-android.txt?raw';
 ---
+
+<script is:inline>
+  /**
+   * Runs synchronously before the banner div is parsed so the correct
+   * logo and a close-enough --sl-nav-height are active on first paint
+   * (no FOUC). The bundled script below takes over with precise values.
+   *
+   * Detection mirrors web-terminal/js/main.js.
+   */
+  (function () {
+    var isAndroid = /android/i.test(navigator.userAgent);
+    var w         = window.innerWidth;
+    var isMobile  = w < 1041;
+    var banner    = isAndroid ? 'android' : isMobile ? 'mobile' : 'desktop';
+    document.documentElement.setAttribute('data-banner', banner);
+
+    /* Approximate header height so content is never hidden behind the
+       banner before the ResizeObserver fires.
+       Noto Sans Mono box-drawing characters have a line-height of ~1.5,
+       so 6 lines = font-size × 9. Fixed overhead breakdown:
+         --sl-nav-pad-y(12) + banner-top(12) + logo-margin(12) + nav(20)
+         + banner-bottom(8) + controls(48) + --sl-nav-pad-y(12) = 124px
+       An extra 20px buffer ensures no overlap before JS corrects it. */
+    var fontSize = isMobile
+      ? Math.min(w * 0.04, 30)
+      : Math.min(w * 0.013, 18);
+    var estimated = Math.round(fontSize * 9 + 144);
+    document.documentElement.style.setProperty('--sl-nav-height', estimated + 'px');
+  }());
+</script>
 
 <div class="tp-banner">
   <a href="https://todoprogramming.org" class="tp-logo-link" aria-label="TodoProgramming home">
     <pre class="tp-logo tp-logo-full">{logoFull}</pre>
     <pre class="tp-logo tp-logo-short">{logoShort}</pre>
+    <pre class="tp-logo tp-logo-android">{logoAndroid}</pre>
   </a>
   <nav class="tp-nav">
     <a href="https://wiki.todoprogramming.org/">[WIKI]</a>
@@ -22,16 +54,68 @@ import logoShort from '../assets/tp-mobile.txt?raw';
   <Default {...Astro.props}><slot /></Default>
 </div>
 
+<script>
+  /**
+   * Keeps --sl-nav-height in sync with the actual rendered header height
+   * so the Starlight content area never overlaps the sticky banner.
+   *
+   * Also re-evaluates data-banner when the viewport crosses the
+   * mobile/desktop threshold — fixes the stale banner seen when loading
+   * at a small size and then expanding the window.
+   */
+  (function () {
+    const header    = document.querySelector('header.header');
+    const isAndroid = /android/i.test(navigator.userAgent);
+
+    if (!header) { return; }
+
+    /** Update data-banner based on current viewport (non-Android only). */
+    function syncBanner() {
+      if (isAndroid) { return; }
+      const banner = window.innerWidth < 1041 ? 'mobile' : 'desktop';
+      document.documentElement.setAttribute('data-banner', banner);
+    }
+
+    /** Measure the real header height and write it to --sl-nav-height. */
+    function syncNavHeight() {
+      const h = Math.ceil(header.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--sl-nav-height', h + 'px');
+    }
+
+    /** Run both in sequence — banner change can alter header height. */
+    function sync() {
+      syncBanner();
+      syncNavHeight();
+    }
+
+    /* Accurate update after fonts finish loading (affects banner height). */
+    document.fonts.ready.then(sync);
+
+    /* Recheck whenever the header element itself resizes (e.g. font load,
+       vw-based font sizes, orientation change). */
+    const ro = new ResizeObserver(syncNavHeight);
+    ro.observe(header);
+
+    /* Recheck banner variant on every window resize. */
+    window.addEventListener('resize', sync);
+  }());
+</script>
+
 <style>
   .tp-banner {
     background: #0a0f0a;
-    padding: 0.75rem 0 0.5rem;
+    /* Match Starlight's horizontal nav padding so the logo and nav links
+       align with the rest of the page content and are never clipped at
+       the screen edge (e.g. Fold 4 safe-area insets). */
+    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0.5rem;
     overflow-x: hidden;
   }
+
   .tp-logo-link {
     display: block;
     text-decoration: none;
   }
+
   .tp-logo {
     margin: 0 0 12px 0;
     color: #33ff33;
@@ -42,18 +126,22 @@ import logoShort from '../assets/tp-mobile.txt?raw';
     white-space: pre;
     letter-spacing: 0;
   }
-  .tp-logo-full  { font-size: min(1.3vw, 18px); }
-  .tp-logo-short { font-size: min(4vw, 30px); display: none; }
 
-  /* below 1041px: hide the full logo, show TODO */
-  @media (max-width: 1040px) {
-    .tp-logo-full  { display: none; }
-    .tp-logo-short { display: block; }
-  }
+  /*
+   * Visibility via CSS custom properties inherited from <html>.
+   * [data-banner] sets --show-* on <html> in the global styles below.
+   * Using var() prevents the Lightning CSS optimizer from collapsing
+   * or dead-code-eliminating these rules across stylesheet boundaries.
+   */
+  .tp-logo-full    { font-size: min(1.3vw, 18px); display: var(--show-full,    none); }
+  .tp-logo-short   { font-size: min(4vw, 30px);   display: var(--show-short,   none); }
+  .tp-logo-android { font-size: min(4vw, 30px);   display: var(--show-android, none); }
 
   .tp-nav {
     margin-top: -2px;
+    white-space: nowrap;
   }
+
   .tp-nav a {
     display: inline-block;
     font-family: "Noto Sans Mono", monospace;
@@ -63,18 +151,49 @@ import logoShort from '../assets/tp-mobile.txt?raw';
     margin-right: 23px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    white-space: nowrap;
   }
+
   .tp-nav a:hover {
     text-shadow: 0 0 8px #ffb000;
     text-decoration: underline;
   }
+
+  /* Fold 4 front screen (≤ 400px): tighten nav so all four links fit
+     on one line — at 260px / 13px font this keeps total width ~224px. */
+  @media (max-width: 400px) {
+    .tp-nav a {
+      margin-right: 8px;
+      letter-spacing: 0;
+    }
+  }
 </style>
 
 <style is:global>
-  /* hide the duplicate text title */
+  /* Hide the duplicate site title rendered by the Default header */
   .tp-controls .site-title { display: none; }
 
-  /* flush-left banner, re-inset the controls */
+  /*
+   * Override Starlight's fixed height so our tall banner determines the
+   * header height naturally. The fixed position and z-index are kept.
+   * --sl-nav-height is kept in sync by the ResizeObserver below, so all
+   * of Starlight's layout offsets (sidebar top, scroll-margin, etc.) are
+   * still correct — just derived from the real measured height instead of
+   * a hardcoded value.
+   */
+  header.header { height: auto !important; }
+
+  /* Flush-left banner; re-inset the Starlight controls */
   .header { padding-inline-start: 0; }
   .tp-controls { padding-inline-start: var(--sl-nav-pad-x, 1rem); }
+
+  /*
+   * Show exactly one logo variant based on data-banner set by the
+   * inline script. Custom properties inherit down the DOM so each
+   * <pre> picks up only the one that matches; the fallback `none` hides
+   * every other variant.
+   */
+  [data-banner="desktop"]  { --show-full:    block; }
+  [data-banner="mobile"]   { --show-short:   block; }
+  [data-banner="android"]  { --show-android: block; }
 </style>

@@ -7,8 +7,12 @@
     --sl-font: "Courier Prime", monospace;
     --sl-font-mono: "Noto Sans Mono", monospace;
 
-    /* header height — tune to your header's real pixel height (DevTools) */
-    --sl-nav-height: 230px;
+    /* Header height — set precisely at runtime by Header.astro's
+       ResizeObserver. This calc() is only a load-time fallback until JS
+       fires. Formula: 6 lines × font-size × 1.5 line-height (= ×9) +
+       144px overhead (nav-pad-y×2 + banner-padding + controls + buffer).
+       Mobile/android banner uses min(4vw,30px); desktop uses min(1.3vw,18px). */
+    --sl-nav-height: calc(min(4vw, 30px) * 9 + 144px);
 
     /* accent: orange links + active nav */
     --sl-color-accent-low: #3a2800;
@@ -34,6 +38,13 @@
     --sl-color-hairline: #1c2a1c;
     --sl-color-hairline-light: #1c2a1c;
     --sl-color-hairline-shade: #0f160f;
+}
+
+/* Desktop override — full banner uses a narrower font-size range */
+@media (min-width: 1041px) {
+  :root {
+    --sl-nav-height: calc(min(1.3vw, 18px) * 9 + 144px);
+  }
 }
 
 /* link glow on hover */
