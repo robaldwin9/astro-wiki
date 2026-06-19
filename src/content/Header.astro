@@ -38,8 +38,8 @@ import logoAndroid from '../assets/tp-android.txt?raw';
        before JS fires. The ResizeObserver below will correct and cache it. */
     var fontSize = isMobile
       ? Math.min(w * 0.04, 30)
-      : Math.min(w * 0.013, 18);
-    var estimated = Math.round(fontSize * 9 + 100);
+      : Math.min(w * 0.015, 18);
+    var estimated = Math.round(fontSize * 6 + 100);
     document.documentElement.style.setProperty('--sl-nav-height', estimated + 'px');
   }());
 </script>
@@ -122,7 +122,7 @@ import logoAndroid from '../assets/tp-android.txt?raw';
 <style>
   /* Logo row — full-width, flush left */
   .tp-banner {
-    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0.25rem;
+    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0;
     overflow-x: hidden;
   }
 
@@ -133,11 +133,11 @@ import logoAndroid from '../assets/tp-android.txt?raw';
 
   .tp-logo {
     margin: 0 0 12px 0;
-    color: #33ff33;
+    color: #39ff14;
     background: none;
     border: none;
     font-family: "Noto Sans Mono", monospace;
-    line-height: normal;
+    line-height: 1;
     white-space: pre;
     letter-spacing: 0;
   }
@@ -148,7 +148,7 @@ import logoAndroid from '../assets/tp-android.txt?raw';
    * Using var() prevents the Lightning CSS optimizer from collapsing
    * or dead-code-eliminating these rules across stylesheet boundaries.
    */
-  .tp-logo-full    { font-size: min(1.3vw, 18px); display: var(--show-full,    none); }
+  .tp-logo-full    { font-size: clamp(13px, 1.5vw, 18px); display: var(--show-full,    none); }
   .tp-logo-short   { font-size: min(4vw, 30px);   display: var(--show-short,   none); }
   .tp-logo-android { font-size: min(4vw, 30px);   display: var(--show-android, none); }
 
@@ -168,10 +168,11 @@ import logoAndroid from '../assets/tp-android.txt?raw';
   }
 
   .tp-nav a {
-    font-family: "Noto Sans Mono", monospace;
-    font-size: clamp(13px, 1.5vw, 18px);
+    font-family: "Courier Prime", monospace;
+    font-size: 18px;
     color: #ffb000;
     text-decoration: none;
+    display: inline-block;
     margin-right: 20px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -183,11 +184,11 @@ import logoAndroid from '../assets/tp-android.txt?raw';
     text-decoration: underline;
   }
 
-  /* Fold 4 front screen (≤ 400px): handled by the existing media query. */
-  @media (max-width: 400px) {
+  /* Match web-terminal / blog nav tightening on small screens. */
+  @media (max-width: 600px) {
     .tp-nav a {
       margin-right: 8px;
-      letter-spacing: 0;
+      letter-spacing: 0.05em;
     }
   }
 </style>
