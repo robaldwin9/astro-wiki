@@ -21,10 +21,21 @@ import logoAndroid from '../assets/tp-android.txt?raw';
     var banner    = isAndroid ? 'android' : isMobile ? 'mobile' : 'desktop';
     document.documentElement.setAttribute('data-banner', banner);
 
-    /* Estimate header height: 6 logo lines × font-size × 1.5 line-height (×9)
-       + fixed overhead (banner padding + nav row + controls ≈ 100px).
-       Outer header padding is 0 (we removed it), so no nav-pad-y to add.
-       +20px safety buffer so content is never hidden before JS fires. */
+    /* Use the real height cached by a previous page load if available.
+       The cache key includes the banner variant so a mobile cache does
+       not apply on desktop (and vice versa), avoiding a different jitter.
+       This eliminates the estimate→real correction jump on all page
+       navigations after the first visit in each viewport class. */
+    var cacheKey = 'sl-nav-height-' + banner;
+    var cached = null;
+    try { cached = localStorage.getItem(cacheKey); } catch (e) {}
+    if (cached) {
+      document.documentElement.style.setProperty('--sl-nav-height', cached);
+      return;
+    }
+
+    /* First visit only: estimate header height so content isn't hidden
+       before JS fires. The ResizeObserver below will correct and cache it. */
     var fontSize = isMobile
       ? Math.min(w * 0.04, 30)
       : Math.min(w * 0.013, 18);
@@ -77,10 +88,16 @@ import logoAndroid from '../assets/tp-android.txt?raw';
       document.documentElement.setAttribute('data-banner', banner);
     }
 
-    /** Measure the real header height and write it to --sl-nav-height. */
+    /** Measure the real header height and write it to --sl-nav-height.
+     *  Also caches the value in localStorage (keyed by banner variant) so
+     *  the inline script can apply it on the next page load without an
+     *  estimate→real correction jump, preventing sidebar jitter. */
     function syncNavHeight() {
       const h = Math.ceil(header.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--sl-nav-height', h + 'px');
+      const value = h + 'px';
+      document.documentElement.style.setProperty('--sl-nav-height', value);
+      const banner = document.documentElement.getAttribute('data-banner') || 'desktop';
+      try { localStorage.setItem('sl-nav-height-' + banner, value); } catch (e) {}
     }
 
     /** Run both in sequence — banner change can alter header height. */
