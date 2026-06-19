@@ -21,37 +21,38 @@ import logoAndroid from '../assets/tp-android.txt?raw';
     var banner    = isAndroid ? 'android' : isMobile ? 'mobile' : 'desktop';
     document.documentElement.setAttribute('data-banner', banner);
 
-    /* Approximate header height so content is never hidden behind the
-       banner before the ResizeObserver fires.
-       Noto Sans Mono box-drawing characters have a line-height of ~1.5,
-       so 6 lines = font-size × 9. Fixed overhead breakdown:
-         --sl-nav-pad-y(12) + banner-top(12) + logo-margin(12) + nav(20)
-         + banner-bottom(8) + controls(48) + --sl-nav-pad-y(12) = 124px
-       An extra 20px buffer ensures no overlap before JS corrects it. */
+    /* Estimate header height: 6 logo lines × font-size × 1.5 line-height (×9)
+       + fixed overhead (banner padding + nav row + controls ≈ 100px).
+       Outer header padding is 0 (we removed it), so no nav-pad-y to add.
+       +20px safety buffer so content is never hidden before JS fires. */
     var fontSize = isMobile
       ? Math.min(w * 0.04, 30)
       : Math.min(w * 0.013, 18);
-    var estimated = Math.round(fontSize * 9 + 144);
+    var estimated = Math.round(fontSize * 9 + 100);
     document.documentElement.style.setProperty('--sl-nav-height', estimated + 'px');
   }());
 </script>
 
+<!-- Logo only — nav has moved to tp-navrow below -->
 <div class="tp-banner">
   <a href="https://todoprogramming.org" class="tp-logo-link" aria-label="TodoProgramming home">
     <pre class="tp-logo tp-logo-full">{logoFull}</pre>
     <pre class="tp-logo tp-logo-short">{logoShort}</pre>
     <pre class="tp-logo tp-logo-android">{logoAndroid}</pre>
   </a>
+</div>
+
+<!-- Nav links + search bar on the same flex row -->
+<div class="tp-navrow">
   <nav class="tp-nav">
     <a href="https://wiki.todoprogramming.org/">[WIKI]</a>
     <a href="https://blog.todoprogramming.org/">[BLOG]</a>
     <a href="https://github.com/robaldwin9">[GIT]</a>
     <a href="https://wiki.todoprogramming.org/about/">[ABOUT]</a>
   </nav>
-</div>
-
-<div class="tp-controls">
-  <Default {...Astro.props}><slot /></Default>
+  <div class="tp-controls">
+    <Default {...Astro.props}><slot /></Default>
+  </div>
 </div>
 
 <script>
@@ -102,12 +103,9 @@ import logoAndroid from '../assets/tp-android.txt?raw';
 </script>
 
 <style>
+  /* Logo row — full-width, flush left */
   .tp-banner {
-    background: #0a0f0a;
-    /* Match Starlight's horizontal nav padding so the logo and nav links
-       align with the rest of the page content and are never clipped at
-       the screen edge (e.g. Fold 4 safe-area insets). */
-    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0.5rem;
+    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0.25rem;
     overflow-x: hidden;
   }
 
@@ -129,7 +127,7 @@ import logoAndroid from '../assets/tp-android.txt?raw';
 
   /*
    * Visibility via CSS custom properties inherited from <html>.
-   * [data-banner] sets --show-* on <html> in the global styles below.
+   * [data-banner] sets --show-* on <html> in the global styles.
    * Using var() prevents the Lightning CSS optimizer from collapsing
    * or dead-code-eliminating these rules across stylesheet boundaries.
    */
@@ -137,18 +135,27 @@ import logoAndroid from '../assets/tp-android.txt?raw';
   .tp-logo-short   { font-size: min(4vw, 30px);   display: var(--show-short,   none); }
   .tp-logo-android { font-size: min(4vw, 30px);   display: var(--show-android, none); }
 
+  /* Nav + search row — flex so search sits directly after [ABOUT] */
+  .tp-navrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 0 var(--sl-nav-pad-x, 1rem) 0.5rem;
+  }
+
   .tp-nav {
-    margin-top: -2px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
     white-space: nowrap;
   }
 
   .tp-nav a {
-    display: inline-block;
     font-family: "Noto Sans Mono", monospace;
     font-size: clamp(13px, 1.5vw, 18px);
     color: #ffb000;
     text-decoration: none;
-    margin-right: 23px;
+    margin-right: 20px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     white-space: nowrap;
@@ -159,8 +166,7 @@ import logoAndroid from '../assets/tp-android.txt?raw';
     text-decoration: underline;
   }
 
-  /* Fold 4 front screen (≤ 400px): tighten nav so all four links fit
-     on one line — at 260px / 13px font this keeps total width ~224px. */
+  /* Fold 4 front screen (≤ 400px): handled by the existing media query. */
   @media (max-width: 400px) {
     .tp-nav a {
       margin-right: 8px;
@@ -174,18 +180,61 @@ import logoAndroid from '../assets/tp-android.txt?raw';
   .tp-controls .site-title { display: none; }
 
   /*
-   * Override Starlight's fixed height so our tall banner determines the
-   * header height naturally. The fixed position and z-index are kept.
-   * --sl-nav-height is kept in sync by the ResizeObserver below, so all
-   * of Starlight's layout offsets (sidebar top, scroll-margin, etc.) are
-   * still correct — just derived from the real measured height instead of
-   * a hardcoded value.
+   * Override Starlight's fixed header height so our banner determines
+   * the height naturally, and remove all outer header padding since
+   * tp-banner and tp-navrow manage their own spacing.
+   * --sl-nav-height is kept in sync by the ResizeObserver.
    */
-  header.header { height: auto !important; }
+  header.header {
+    height: auto !important;
+    padding: 0 !important;
+  }
 
-  /* Flush-left banner; re-inset the Starlight controls */
+  /* Remove default left padding from both header elements */
   .header { padding-inline-start: 0; }
-  .tp-controls { padding-inline-start: var(--sl-nav-pad-x, 1rem); }
+
+  /*
+   * tp-controls sits directly after [ABOUT]. flex: 1 lets it grow into
+   * remaining row space; max-width caps it so it doesn't stretch across
+   * the whole page on wide screens. Override Starlight's inner header
+   * grid with a simple flex row.
+   */
+  .tp-controls {
+    flex: 1;
+    min-width: 0;
+    max-width: 280px;
+  }
+
+  .tp-controls .header {
+    display: flex !important;
+    align-items: center;
+    height: auto !important;
+    gap: 0;
+  }
+
+  /* The title-wrapper is Starlight's sidebar-column spacer — it has no
+     visible content but stays in the flex flow, pushing the search away.
+     Hide it so the search starts immediately inside tp-controls. */
+  .tp-controls .title-wrapper { display: none; }
+
+  /* Give the search wrapper (the only remaining flex item) flex: 1 so it
+     actually expands to fill the tp-controls width. Without this, width: 100%
+     on site-search resolves to the wrapper's natural content width. */
+  .tp-controls .header > .sl-flex { flex: 1; min-width: 0; }
+
+  /* Stretch the search button to fill the wrapper */
+  .tp-controls site-search {
+    display: block;
+    width: 100%;
+  }
+
+  .tp-controls site-search button[data-open-modal] {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Remove the GitHub logo — redundant with the [GIT] nav link */
+  .tp-controls .right-group { display: none; }
 
   /*
    * Show exactly one logo variant based on data-banner set by the

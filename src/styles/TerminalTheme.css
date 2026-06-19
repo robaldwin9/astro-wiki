@@ -10,9 +10,10 @@
     /* Header height — set precisely at runtime by Header.astro's
        ResizeObserver. This calc() is only a load-time fallback until JS
        fires. Formula: 6 lines × font-size × 1.5 line-height (= ×9) +
-       144px overhead (nav-pad-y×2 + banner-padding + controls + buffer).
+       100px overhead (banner padding + combined nav+search row + buffer).
+       Outer header padding is 0, so no nav-pad-y contribution.
        Mobile/android banner uses min(4vw,30px); desktop uses min(1.3vw,18px). */
-    --sl-nav-height: calc(min(4vw, 30px) * 9 + 144px);
+    --sl-nav-height: calc(min(4vw, 30px) * 9 + 100px);
 
     /* accent: orange links + active nav */
     --sl-color-accent-low: #3a2800;
@@ -43,7 +44,7 @@
 /* Desktop override — full banner uses a narrower font-size range */
 @media (min-width: 1041px) {
   :root {
-    --sl-nav-height: calc(min(1.3vw, 18px) * 9 + 144px);
+    --sl-nav-height: calc(min(1.3vw, 18px) * 9 + 100px);
   }
 }
 
