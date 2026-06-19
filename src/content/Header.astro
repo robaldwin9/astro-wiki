@@ -3,35 +3,134 @@ import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/Header.astro';
 import logoFull from '../assets/tp-logo.txt?raw';
 import logoShort from '../assets/tp-mobile.txt?raw';
+import logoAndroid from '../assets/tp-android.txt?raw';
 ---
 
+<script is:inline>
+  /**
+   * Runs synchronously before the banner div is parsed so the correct
+   * logo and a close-enough --sl-nav-height are active on first paint
+   * (no FOUC). The bundled script below takes over with precise values.
+   *
+   * Detection mirrors web-terminal/js/main.js.
+   */
+  (function () {
+    var isAndroid = /android/i.test(navigator.userAgent);
+    var w         = window.innerWidth;
+    var isMobile  = w < 1041;
+    var banner    = isAndroid ? 'android' : isMobile ? 'mobile' : 'desktop';
+    document.documentElement.setAttribute('data-banner', banner);
+
+    /* Use the real height cached by a previous page load if available.
+       The cache key includes the banner variant so a mobile cache does
+       not apply on desktop (and vice versa), avoiding a different jitter.
+       This eliminates the estimate→real correction jump on all page
+       navigations after the first visit in each viewport class. */
+    var cacheKey = 'sl-nav-height-' + banner;
+    var cached = null;
+    try { cached = localStorage.getItem(cacheKey); } catch (e) {}
+    if (cached) {
+      document.documentElement.style.setProperty('--sl-nav-height', cached);
+      return;
+    }
+
+    /* First visit only: estimate header height so content isn't hidden
+       before JS fires. The ResizeObserver below will correct and cache it. */
+    var fontSize = isMobile
+      ? Math.min(w * 0.04, 30)
+      : Math.min(w * 0.013, 18);
+    var estimated = Math.round(fontSize * 9 + 100);
+    document.documentElement.style.setProperty('--sl-nav-height', estimated + 'px');
+  }());
+</script>
+
+<!-- Logo only — nav has moved to tp-navrow below -->
 <div class="tp-banner">
   <a href="https://todoprogramming.org" class="tp-logo-link" aria-label="TodoProgramming home">
     <pre class="tp-logo tp-logo-full">{logoFull}</pre>
     <pre class="tp-logo tp-logo-short">{logoShort}</pre>
+    <pre class="tp-logo tp-logo-android">{logoAndroid}</pre>
   </a>
+</div>
+
+<!-- Nav links + search bar on the same flex row -->
+<div class="tp-navrow">
   <nav class="tp-nav">
     <a href="https://wiki.todoprogramming.org/">[WIKI]</a>
     <a href="https://blog.todoprogramming.org/">[BLOG]</a>
     <a href="https://github.com/robaldwin9">[GIT]</a>
     <a href="https://wiki.todoprogramming.org/about/">[ABOUT]</a>
   </nav>
+  <div class="tp-controls">
+    <Default {...Astro.props}><slot /></Default>
+  </div>
 </div>
 
-<div class="tp-controls">
-  <Default {...Astro.props}><slot /></Default>
-</div>
+<script>
+  /**
+   * Keeps --sl-nav-height in sync with the actual rendered header height
+   * so the Starlight content area never overlaps the sticky banner.
+   *
+   * Also re-evaluates data-banner when the viewport crosses the
+   * mobile/desktop threshold — fixes the stale banner seen when loading
+   * at a small size and then expanding the window.
+   */
+  (function () {
+    const header    = document.querySelector('header.header');
+    const isAndroid = /android/i.test(navigator.userAgent);
+
+    if (!header) { return; }
+
+    /** Update data-banner based on current viewport (non-Android only). */
+    function syncBanner() {
+      if (isAndroid) { return; }
+      const banner = window.innerWidth < 1041 ? 'mobile' : 'desktop';
+      document.documentElement.setAttribute('data-banner', banner);
+    }
+
+    /** Measure the real header height and write it to --sl-nav-height.
+     *  Also caches the value in localStorage (keyed by banner variant) so
+     *  the inline script can apply it on the next page load without an
+     *  estimate→real correction jump, preventing sidebar jitter. */
+    function syncNavHeight() {
+      const h = Math.ceil(header.getBoundingClientRect().height);
+      const value = h + 'px';
+      document.documentElement.style.setProperty('--sl-nav-height', value);
+      const banner = document.documentElement.getAttribute('data-banner') || 'desktop';
+      try { localStorage.setItem('sl-nav-height-' + banner, value); } catch (e) {}
+    }
+
+    /** Run both in sequence — banner change can alter header height. */
+    function sync() {
+      syncBanner();
+      syncNavHeight();
+    }
+
+    /* Accurate update after fonts finish loading (affects banner height). */
+    document.fonts.ready.then(sync);
+
+    /* Recheck whenever the header element itself resizes (e.g. font load,
+       vw-based font sizes, orientation change). */
+    const ro = new ResizeObserver(syncNavHeight);
+    ro.observe(header);
+
+    /* Recheck banner variant on every window resize. */
+    window.addEventListener('resize', sync);
+  }());
+</script>
 
 <style>
+  /* Logo row — full-width, flush left */
   .tp-banner {
-    background: #0a0f0a;
-    padding: 0.75rem 0 0.5rem;
+    padding: 0.75rem var(--sl-nav-pad-x, 1rem) 0.25rem;
     overflow-x: hidden;
   }
+
   .tp-logo-link {
     display: block;
     text-decoration: none;
   }
+
   .tp-logo {
     margin: 0 0 12px 0;
     color: #33ff33;
@@ -42,39 +141,179 @@ import logoShort from '../assets/tp-mobile.txt?raw';
     white-space: pre;
     letter-spacing: 0;
   }
-  .tp-logo-full  { font-size: min(1.3vw, 18px); }
-  .tp-logo-short { font-size: min(4vw, 30px); display: none; }
 
-  /* below 1041px: hide the full logo, show TODO */
-  @media (max-width: 1040px) {
-    .tp-logo-full  { display: none; }
-    .tp-logo-short { display: block; }
+  /*
+   * Visibility via CSS custom properties inherited from <html>.
+   * [data-banner] sets --show-* on <html> in the global styles.
+   * Using var() prevents the Lightning CSS optimizer from collapsing
+   * or dead-code-eliminating these rules across stylesheet boundaries.
+   */
+  .tp-logo-full    { font-size: min(1.3vw, 18px); display: var(--show-full,    none); }
+  .tp-logo-short   { font-size: min(4vw, 30px);   display: var(--show-short,   none); }
+  .tp-logo-android { font-size: min(4vw, 30px);   display: var(--show-android, none); }
+
+  /* Nav + search row — flex so search sits directly after [ABOUT] */
+  .tp-navrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 0 var(--sl-nav-pad-x, 1rem) 0.5rem;
   }
 
   .tp-nav {
-    margin-top: -2px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
+
   .tp-nav a {
-    display: inline-block;
     font-family: "Noto Sans Mono", monospace;
     font-size: clamp(13px, 1.5vw, 18px);
     color: #ffb000;
     text-decoration: none;
-    margin-right: 23px;
+    margin-right: 20px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    white-space: nowrap;
   }
+
   .tp-nav a:hover {
     text-shadow: 0 0 8px #ffb000;
     text-decoration: underline;
   }
+
+  /* Fold 4 front screen (≤ 400px): handled by the existing media query. */
+  @media (max-width: 400px) {
+    .tp-nav a {
+      margin-right: 8px;
+      letter-spacing: 0;
+    }
+  }
 </style>
 
 <style is:global>
-  /* hide the duplicate text title */
+  /* Hide the duplicate site title rendered by the Default header */
   .tp-controls .site-title { display: none; }
 
-  /* flush-left banner, re-inset the controls */
+  /*
+   * Override Starlight's fixed header height so our banner determines
+   * the height naturally, and remove all outer header padding since
+   * tp-banner and tp-navrow manage their own spacing.
+   * --sl-nav-height is kept in sync by the ResizeObserver.
+   */
+  header.header {
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  /* Remove default left padding from both header elements */
   .header { padding-inline-start: 0; }
-  .tp-controls { padding-inline-start: var(--sl-nav-pad-x, 1rem); }
+
+  /*
+   * tp-controls sits directly after [ABOUT]. flex: 1 lets it grow into
+   * remaining row space; max-width caps it so it doesn't stretch across
+   * the whole page on wide screens. Override Starlight's inner header
+   * grid with a simple flex row.
+   */
+  .tp-controls {
+    flex: 1;
+    min-width: 0;
+    max-width: 280px;
+  }
+
+  .tp-controls .header {
+    display: flex !important;
+    align-items: center;
+    height: auto !important;
+    gap: 0;
+  }
+
+  /* The title-wrapper is Starlight's sidebar-column spacer — it has no
+     visible content but stays in the flex flow, pushing the search away.
+     Hide it so the search starts immediately inside tp-controls. */
+  .tp-controls .title-wrapper { display: none; }
+
+  /* Give the search wrapper (the only remaining flex item) flex: 1 so it
+     actually expands to fill the tp-controls width. Without this, width: 100%
+     on site-search resolves to the wrapper's natural content width. */
+  .tp-controls .header > .sl-flex { flex: 1; min-width: 0; }
+
+  /* Stretch the search button to fill the wrapper */
+  .tp-controls site-search {
+    display: block;
+    width: 100%;
+  }
+
+  .tp-controls site-search button[data-open-modal] {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Remove the GitHub logo — redundant with the [GIT] nav link */
+  .tp-controls .right-group { display: none; }
+
+  /*
+   * Hamburger menu button:
+   *  - Orange to match the nav link palette
+   *  - Placed directly below the header (inset-block-start: nav-height)
+   *    instead of vertically centred inside it
+   *  - Left-aligned to match the tp-navrow padding
+   */
+  /*
+   * Hamburger: sit directly below the header, vertically centred inside
+   * the mobile TOC bar.
+   *   TOC bar height = --sl-mobile-toc-height = 3rem
+   *   Button height  = --sl-menu-button-size  = 2rem
+   *   (3rem - 2rem) / 2 = 0.5rem top offset inside the bar
+   * Result: no collision with the nav links above OR the TOC bar.
+   *
+   * The sidebar-content only has 1rem of top padding by default, but the
+   * hamburger extends to 2.5rem below the sidebar top (0.5rem offset +
+   * 2rem button height). Push the sidebar content below the button so the
+   * first item is not clipped.
+   *   needed: menu-button-size (2rem) + offset (0.5rem) + gap (0.5rem) = 3rem
+   */
+  @media (max-width: 50rem) {
+    #starlight__sidebar .sidebar-content {
+      padding-top: calc(var(--sl-menu-button-size, 2rem) + 1rem) !important;
+    }
+  }
+
+  starlight-menu-button button {
+    inset-block-start: calc(var(--sl-nav-height) + 0.5rem) !important;
+    inset-inline-end: unset !important;
+    inset-inline-start: var(--sl-nav-pad-x, 1rem) !important;
+    background-color: #ffb000 !important;
+    color: #0a0f0a !important;
+    box-shadow: 0 0 8px rgba(255, 176, 0, 0.3) !important;
+  }
+
+  /* Keep orange when the menu is open */
+  starlight-menu-button[aria-expanded="true"] button {
+    background-color: #cc8e00 !important;
+    color: #0a0f0a !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * Mobile TOC bar ("On this page"): indent the content so it starts
+   * to the right of the hamburger button.
+   * Hamburger occupies: nav-pad-x (1rem) + menu-button-size (2rem) = 3rem
+   * Add 0.5rem gap → 3.5rem total indent.
+   * This element is in @layer starlight.core so no !important needed.
+   */
+  nav[aria-labelledby="starlight__on-this-page--mobile"] {
+    padding-inline-start: calc(var(--sl-nav-pad-x, 1rem) + var(--sl-menu-button-size, 2rem) + 0.5rem);
+  }
+
+  /*
+   * Show exactly one logo variant based on data-banner set by the
+   * inline script. Custom properties inherit down the DOM so each
+   * <pre> picks up only the one that matches; the fallback `none` hides
+   * every other variant.
+   */
+  [data-banner="desktop"]  { --show-full:    block; }
+  [data-banner="mobile"]   { --show-short:   block; }
+  [data-banner="android"]  { --show-android: block; }
 </style>
