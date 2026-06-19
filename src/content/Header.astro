@@ -237,6 +237,48 @@ import logoAndroid from '../assets/tp-android.txt?raw';
   .tp-controls .right-group { display: none; }
 
   /*
+   * Hamburger menu button:
+   *  - Orange to match the nav link palette
+   *  - Placed directly below the header (inset-block-start: nav-height)
+   *    instead of vertically centred inside it
+   *  - Left-aligned to match the tp-navrow padding
+   */
+  /*
+   * Hamburger: sit directly below the header, vertically centred inside
+   * the mobile TOC bar.
+   *   TOC bar height = --sl-mobile-toc-height = 3rem
+   *   Button height  = --sl-menu-button-size  = 2rem
+   *   (3rem - 2rem) / 2 = 0.5rem top offset inside the bar
+   * Result: no collision with the nav links above OR the TOC bar.
+   */
+  starlight-menu-button button {
+    inset-block-start: calc(var(--sl-nav-height) + 0.5rem) !important;
+    inset-inline-end: unset !important;
+    inset-inline-start: var(--sl-nav-pad-x, 1rem) !important;
+    background-color: #ffb000 !important;
+    color: #0a0f0a !important;
+    box-shadow: 0 0 8px rgba(255, 176, 0, 0.3) !important;
+  }
+
+  /* Keep orange when the menu is open */
+  starlight-menu-button[aria-expanded="true"] button {
+    background-color: #cc8e00 !important;
+    color: #0a0f0a !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * Mobile TOC bar ("On this page"): indent the content so it starts
+   * to the right of the hamburger button.
+   * Hamburger occupies: nav-pad-x (1rem) + menu-button-size (2rem) = 3rem
+   * Add 0.5rem gap → 3.5rem total indent.
+   * This element is in @layer starlight.core so no !important needed.
+   */
+  nav[aria-labelledby="starlight__on-this-page--mobile"] {
+    padding-inline-start: calc(var(--sl-nav-pad-x, 1rem) + var(--sl-menu-button-size, 2rem) + 0.5rem);
+  }
+
+  /*
    * Show exactly one logo variant based on data-banner set by the
    * inline script. Custom properties inherit down the DOM so each
    * <pre> picks up only the one that matches; the fallback `none` hides

@@ -2,6 +2,19 @@
     padding-block: 1rem !important;
 }
 
+/*
+ * On mobile the hamburger + "On this page" bar sit directly below the header.
+ * Starlight's default padding-top is calc(--sl-nav-height + --sl-mobile-toc-height)
+ * which puts the page title flush against the bottom of the TOC bar.
+ * Adding 0.75rem breathing room prevents any overlap/clipping.
+ * Only applied at mobile widths where --sl-mobile-toc-height > 0.
+ */
+@media (max-width: 50rem) {
+    .main-frame {
+        padding-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height) + 0.75rem) !important;
+    }
+}
+
 .sl-markdown-content {
     margin-inline: auto;
 }
