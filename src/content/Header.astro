@@ -267,7 +267,19 @@ import logoAndroid from '../assets/tp-android.txt?raw';
    *   Button height  = --sl-menu-button-size  = 2rem
    *   (3rem - 2rem) / 2 = 0.5rem top offset inside the bar
    * Result: no collision with the nav links above OR the TOC bar.
+   *
+   * The sidebar-content only has 1rem of top padding by default, but the
+   * hamburger extends to 2.5rem below the sidebar top (0.5rem offset +
+   * 2rem button height). Push the sidebar content below the button so the
+   * first item is not clipped.
+   *   needed: menu-button-size (2rem) + offset (0.5rem) + gap (0.5rem) = 3rem
    */
+  @media (max-width: 50rem) {
+    #starlight__sidebar .sidebar-content {
+      padding-top: calc(var(--sl-menu-button-size, 2rem) + 1rem) !important;
+    }
+  }
+
   starlight-menu-button button {
     inset-block-start: calc(var(--sl-nav-height) + 0.5rem) !important;
     inset-inline-end: unset !important;
