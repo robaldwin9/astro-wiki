@@ -13,7 +13,6 @@ import { Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
 <Tabs>
   <TabItem label="Usage">
     ```js
-    cube(size = [x,y,z], center = true/false);
     cube(size = x);
     ```
   </TabItem>
@@ -21,10 +20,9 @@ import { Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
     ```js
     cube(10);
     ```
+    ![10mm-cube.png](https://cdn.todoprogramming.org/openscad/10mm-cube.png)
   </TabItem>
 </Tabs>
-
-![A simple 10mm uniform cube rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/10mm-cube.png)
 </Card>
 
 <Card title="Non Uniform Cube">
@@ -38,10 +36,9 @@ import { Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
     ```js
     cube([25,35,55]);
     ```
+    ![non-uniform-cube.png](https://cdn.todoprogramming.org/openscad/non-uniform-cube.png)
   </TabItem>
 </Tabs>
-
-![A non-uniform cube with dimensions 25x35x55mm rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/non-uniform-cube.png)
 </Card>
 
 <Card title="Centered Cube">
@@ -55,10 +52,29 @@ import { Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
     ```js
     cube([20,30,50],center=true);
     ```
+    ![centered-cube.png](https://cdn.todoprogramming.org/openscad/centered-cube.png)
   </TabItem>
 </Tabs>
+</Card>
 
-![A centered cube with dimensions 20x30x50mm rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/centered-cube.png)
+<Card title="Two Cubes One Moved">
+<Tabs>
+  <TabItem label="Usage">
+    ```js
+        cube([x,y,z]);
+        translate([x1,y1,z1])
+        cube([x2,y2,z2])
+    ```
+  </TabItem>
+  <TabItem label="Example">
+    ```js
+    cube([60, 20, 10], center=true);
+    translate([0, 0, 5])
+    cube([30,20,10], center=true);
+    ```
+    ![intersecting-cubes-w-translate.png](https://cdn.todoprogramming.org/openscad/intersecting-cubes-w-tranlate.png)
+  </TabItem>
+</Tabs>
 </Card>
 
 </CardGrid>
