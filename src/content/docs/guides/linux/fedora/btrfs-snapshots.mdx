@@ -43,6 +43,8 @@ use list command to find `<num>`
 
 `sudo snapper -c home delete <num>`
 
+### Remove snapshot range
+`sudo snapper -c home delete <num>..<num>`
 
 ## Btrfs Assistant(GUI)
 The GUI application for managing snapshots on fedora.
@@ -55,6 +57,19 @@ The GUI application for managing snapshots on fedora.
 2. select snapshot location (snapshot config)
 3. press "new" to manually create a snapshot
 
+## Decreasing maximum snapshots configuration
+`sudo nano /etc/snapper/configs/root`
+`sudo nano /etc/snapper/configs/home`
+
+### Add the following lines
+```
+TIMELINE_MIN_AGE="1800"
+TIMELINE_LIMIT_HOURLY="5"
+TIMELINE_LIMIT_DAILY="7"
+TIMELINE_LIMIT_WEEKLY="4"
+TIMELINE_LIMIT_MONTHLY="3"
+TIMELINE_LIMIT_YEARLY="1"
+```
 
 ## Excluding directories from snapshot
 snapshots cost near zero intially and only gor in size as files are changed.
@@ -106,4 +121,11 @@ mv ~/Documents/git ~/Documents/git-old
 btrfs subvolume create ~/Documents/git
 cp -a ~/Documents/git-old/. ~/Documents/git/
 rm -rf ~/Documents/git-old
+```
+
+### Screenshots
+```
+mv ~/Pictures/Screenshots ~/Pictures/Screenshots-old
+btrfs subvolume create ~/Pictures/Screenshots
+cp -a ~/Pictures/Screenshots-old/. ~/Pictures/Screenshots
 ```
