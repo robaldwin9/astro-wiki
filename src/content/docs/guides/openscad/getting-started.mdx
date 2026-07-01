@@ -1,0 +1,55 @@
+---
+title: Getting Started
+description: Covers getting setup for openscad 3d model creating
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Install
+
+Popular install methods are listed below. Some AppImage, and nightly build options exist on the [openscad page](https://openscad.org/downloads.html).
+
+<Tabs>
+  <TabItem label="Windows">
+    ```sh
+    winget install --id=OpenSCAD.OpenSCAD -e
+    ```
+  </TabItem>
+  <TabItem label="macOS">
+    ```sh
+    brew install openscad@snapshot
+    ```
+  </TabItem>
+  <TabItem label="Debian/Ubuntu">
+    ```sh
+    sudo apt-get install openscad
+    ```
+  </TabItem>
+  <TabItem label="Fedora">
+    ```sh
+    sudo dnf install openscad
+    ```
+  </TabItem>
+  <TabItem label="Flatpak">
+    ```sh
+    flatpak remote-add --user --if-not-exists flathub-beta \
+      https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+    flatpak install --user flathub-beta org.openscad.OpenSCAD
+    ```
+  </TabItem>
+</Tabs>
+
+## Documentation
+
+Documentation and examples are provided throughout the openscad section of this wiki.
+The openscad base page is also a good learning resource which was used before crafting the content here.
+All the below links lead directly to [openscad.org](https://openscad.org/).
+
+<CardGrid>
+  <LinkCard title="Documentation" href="https://openscad.org/documentation.html" />
+  <LinkCard title="OpenSCAD User Manual" href="https://en.wikibooks.org/wiki/OpenSCAD_User_Manual#The_OpenSCAD_User_Manual" />
+  <LinkCard title="OpenSCAD Language Reference" href="https://en.wikibooks.org/wiki/OpenSCAD_User_Manual#The_OpenSCAD_Language_Reference" />
+  <LinkCard title="Cheat Sheet" href="https://openscad.org/cheatsheet/index.html" />
+</CardGrid>

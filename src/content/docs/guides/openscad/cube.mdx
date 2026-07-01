@@ -1,0 +1,46 @@
+---
+title: Cube Primitive Examples
+description: Covers using cube primitives
+sidebar:
+  order: 2
+---
+
+## Simple Uniform Cube
+
+### Usage
+```js
+cube(size = [x,y,z], center = true/false);
+cube(size =  x);
+```
+
+### Example
+```js
+cube(10);
+```
+![A simple 10mm uniform cube rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/10mm-cube.png)
+
+## Non Uniform Cube
+
+### Usage
+```js
+cube(size = [x,y,z]);
+```
+
+### Example
+```js
+cube([25,35,55]);
+```
+![A non-uniform cube with dimensions 25x35x55mm rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/non-uniform-cube.png)
+
+## Centered Cube
+
+### Usage
+```js
+cube([20,30,50],center=true);
+```
+
+### Example
+```js
+cube([20,30,50],center=true);
+```
+![A centered cube with dimensions 20x30x50mm rendered in OpenSCAD](https://cdn.todoprogramming.org/openscad/centered-cube.png)
