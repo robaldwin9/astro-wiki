@@ -1,0 +1,80 @@
+---
+title: Cube Primitive Examples
+description: Covers using cube primitives
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+
+<Card title="Simple Uniform Cube">
+<Tabs>
+  <TabItem label="Usage">
+    ```js
+    cube(size = x);
+    ```
+  </TabItem>
+  <TabItem label="Example">
+    ```js
+    cube(10);
+    ```
+    ![10mm-cube.png](https://cdn.todoprogramming.org/openscad/10mm-cube.png)
+  </TabItem>
+</Tabs>
+</Card>
+
+<Card title="Non Uniform Cube">
+<Tabs>
+  <TabItem label="Usage">
+    ```js
+    cube(size = [x,y,z]);
+    ```
+  </TabItem>
+  <TabItem label="Example">
+    ```js
+    cube([25,35,55]);
+    ```
+    ![non-uniform-cube.png](https://cdn.todoprogramming.org/openscad/non-uniform-cube.png)
+  </TabItem>
+</Tabs>
+</Card>
+
+<Card title="Centered Cube">
+<Tabs>
+  <TabItem label="Usage">
+    ```js
+    cube([20,30,50],center=true);
+    ```
+  </TabItem>
+  <TabItem label="Example">
+    ```js
+    cube([20,30,50],center=true);
+    ```
+    ![centered-cube.png](https://cdn.todoprogramming.org/openscad/centered-cube.png)
+  </TabItem>
+</Tabs>
+</Card>
+
+<Card title="Two Cubes One Moved">
+<Tabs>
+  <TabItem label="Usage">
+    ```js
+        cube([x,y,z]);
+        translate([x1,y1,z1])
+        cube([x2,y2,z2])
+    ```
+  </TabItem>
+  <TabItem label="Example">
+    ```js
+    cube([60, 20, 10], center=true);
+    translate([0, 0, 5])
+    cube([30,20,10], center=true);
+    ```
+    ![intersecting-cubes-w-translate.png](https://cdn.todoprogramming.org/openscad/intersecting-cubes-w-tranlate.png)
+  </TabItem>
+</Tabs>
+</Card>
+
+</CardGrid>
